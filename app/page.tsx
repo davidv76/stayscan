@@ -88,14 +88,12 @@ export default function Component() {
             <div className="flex flex-col items-center space-y-4 text-center">
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none text-gray-900">
-                  Streamline Your Property Management
+                  Digital guest guides made simple
                 </h1>
                 <p className="mx-auto max-w-[700px] text-gray-600 md:text-xl">
-                  Stayscan: Create digital guides, manage listings, and elevate your property management experience with our all-in-one solution.
-                </p>
+                create engaging digital guides, streamline your hosting workflow, and enhance guest experiences                </p>
               </div>
               <div className="space-x-4">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">Start Free Trial</Button>
                 <Button variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">Watch Demo</Button>
               </div>
             </div>
@@ -203,22 +201,17 @@ export default function Component() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
                       <CardHeader>
-                        <CardTitle className="text-xl font-semibold">Starter</CardTitle>
+                        <CardTitle className="text-xl font-semibold">Host</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="text-4xl font-bold mb-2 text-blue-600">$49<span className="text-lg font-normal text-gray-600">/mo</span></div>
+                        <div className="text-4xl font-bold mb-2 text-blue-600">$9.99<span className="text-lg font-normal text-gray-600">/mo</span></div>
                         <ul className="space-y-2 mb-4">
-                          <li className="flex items-center text-gray-600">
+                        <li className="flex items-center text-gray-600">
                             <Check className="mr-2 h-4 w-4 text-green-500" />
-                            Up to 50 units
+                            4 Properties
                           </li>
                           <li className="flex items-center text-gray-600">
-                            <Check className="mr-2 h-4 w-4 text-green-500" />
-                            Basic reporting
-                          </li>
-                          <li className="flex items-center text-gray-600">
-                            <Check className="mr-2 h-4 w-4 text-green-500" />
-                            Email support
+                          Designed for individual hosts or those with up to 4 properties, providing all essential guest experience features.
                           </li>
                         </ul>
                         <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">Choose Plan</Button>
@@ -229,19 +222,14 @@ export default function Component() {
                         <CardTitle className="text-xl font-semibold">Professional</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="text-4xl font-bold mb-2 text-blue-600">$99<span className="text-lg font-normal text-gray-600">/mo</span></div>
+                        <div className="text-4xl font-bold mb-2 text-blue-600">$7.99<span className="text-lg font-normal text-gray-600">/mo</span></div>
                         <ul className="space-y-2 mb-4">
-                          <li className="flex items-center text-gray-600">
+                        <li className="flex items-center text-gray-600">
                             <Check className="mr-2 h-4 w-4 text-green-500" />
-                            Up to 200 units
+                            5-49 Properties
                           </li>
                           <li className="flex items-center text-gray-600">
-                            <Check className="mr-2 h-4 w-4  text-green-500" />
-                            Advanced reporting
-                          </li>
-                          <li className="flex items-center text-gray-600">
-                            <Check className="mr-2 h-4 w-4 text-green-500" />
-                            Priority support
+                          Perfect for hosts with a growing portfolio. Includes advanced analytics and streamlined support to enhance guest experiences at scale.
                           </li>
                         </ul>
                         <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">Choose Plan</Button>
@@ -256,15 +244,10 @@ export default function Component() {
                         <ul className="space-y-2 mb-4">
                           <li className="flex items-center text-gray-600">
                             <Check className="mr-2 h-4 w-4 text-green-500" />
-                            Unlimited units
+                            Unlimited Properties
                           </li>
                           <li className="flex items-center text-gray-600">
-                            <Check className="mr-2 h-4 w-4 text-green-500" />
-                            Custom reporting
-                          </li>
-                          <li className="flex items-center text-gray-600">
-                            <Check className="mr-2 h-4 w-4 text-green-500" />
-                            24/7 dedicated support
+                          Tailored solutions for large-scale operations, with personalized onboarding, priority support, and potential custom integrations.
                           </li>
                         </ul>
                         <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">Contact Sales</Button>
@@ -276,22 +259,17 @@ export default function Component() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
                       <CardHeader>
-                        <CardTitle className="text-xl font-semibold">Starter</CardTitle>
+                        <CardTitle className="text-xl font-semibold">Host</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="text-4xl font-bold mb-2 text-blue-600">$39<span className="text-lg font-normal text-gray-600">/mo</span></div>
+                        <div className="text-4xl font-bold mb-2 text-blue-600">$99.99<span className="text-lg font-normal text-gray-600">/mo</span></div>
                         <ul className="space-y-2 mb-4">
                           <li className="flex items-center text-gray-600">
                             <Check className="mr-2 h-4 w-4 text-green-500" />
-                            Up to 50 units
+                            Up to 4 units
                           </li>
                           <li className="flex items-center text-gray-600">
-                            <Check className="mr-2 h-4 w-4 text-green-500" />
-                            Basic reporting
-                          </li>
-                          <li className="flex items-center text-gray-600">
-                            <Check className="mr-2 h-4 w-4 text-green-500" />
-                            Email support
+                          Designed for individual hosts or those with up to 4 properties, providing all essential guest experience features.
                           </li>
                         </ul>
                         <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">Choose Plan</Button>
@@ -299,22 +277,17 @@ export default function Component() {
                     </Card>
                     <Card className="bg-white shadow-sm hover:shadow-md transition-shadow border-2 border-blue-600">
                       <CardHeader>
-                        <CardTitle className="text-xl font-semibold">Professional</CardTitle>
+                        <CardTitle className="text-xl font-semibold">Host Pro</CardTitle>
                       </CardHeader>
                       <CardContent>
                         <div className="text-4xl font-bold mb-2 text-blue-600">$79<span className="text-lg font-normal text-gray-600">/mo</span></div>
                         <ul className="space-y-2 mb-4">
                           <li className="flex items-center text-gray-600">
                             <Check className="mr-2 h-4 w-4 text-green-500" />
-                            Up to 200 units
+                            Up to 49 units
                           </li>
                           <li className="flex items-center text-gray-600">
-                            <Check className="mr-2 h-4 w-4 text-green-500" />
-                            Advanced reporting
-                          </li>
-                          <li className="flex items-center text-gray-600">
-                            <Check className="mr-2 h-4 w-4 text-green-500" />
-                            Priority support
+                          Perfect for hosts with a growing portfolio. Includes advanced analytics and streamlined support to enhance guest experiences at scale.
                           </li>
                         </ul>
                         <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">Choose Plan</Button>
@@ -332,12 +305,7 @@ export default function Component() {
                             Unlimited units
                           </li>
                           <li className="flex items-center text-gray-600">
-                            <Check className="mr-2 h-4 w-4 text-green-500" />
-                            Custom reporting
-                          </li>
-                          <li className="flex items-center text-gray-600">
-                            <Check className="mr-2 h-4 w-4 text-green-500" />
-                            24/7 dedicated support
+                          Tailored solutions for large-scale operations, with personalized onboarding, priority support, and potential custom integrations.
                           </li>
                         </ul>
                         <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">Contact Sales</Button>
