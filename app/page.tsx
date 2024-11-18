@@ -214,7 +214,9 @@ export default function Component() {
                           Designed for individual hosts or those with up to 4 properties, providing all essential guest experience features.
                           </li>
                         </ul>
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">Choose Plan</Button>
+                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" asChild>
+                        <Link href="/sign-in">Choose Plan</Link>
+                      </Button>                      
                       </CardContent>
                     </Card>
                     <Card className="bg-white shadow-sm hover:shadow-md transition-shadow border-2 border-blue-600">
@@ -232,7 +234,9 @@ export default function Component() {
                           Perfect for hosts with a growing portfolio. Includes advanced analytics and streamlined support to enhance guest experiences at scale.
                           </li>
                         </ul>
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">Choose Plan</Button>
+                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" asChild>
+                        <Link href="/sign-in">Choose Plan</Link>
+                      </Button> 
                       </CardContent>
                     </Card>
                     <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
@@ -250,8 +254,10 @@ export default function Component() {
                           Tailored solutions for large-scale operations, with personalized onboarding, priority support, and potential custom integrations.
                           </li>
                         </ul>
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">Contact Sales</Button>
-                      </CardContent>
+                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" asChild>
+                        <Link href="/sign-in">Contact Sales</Link>
+                      </Button>                     
+                       </CardContent>
                     </Card>
                   </div>
                 </TabsContent>
