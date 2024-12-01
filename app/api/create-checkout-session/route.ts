@@ -34,8 +34,15 @@ export async function POST(request: NextRequest) {
     if (user.subscription?.stripeCustomerId) {
       customer = await stripe.customers.retrieve(user.subscription.stripeCustomerId)
     } else {
+      // Fetch the user's email from Clerk
+      const clerkUser = await fetch(`https://api.clerk.dev/v1/users/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${process.env.CLERK_SECRET_KEY}`,
+        },
+      }).then(res => res.json())
+
       customer = await stripe.customers.create({
-        email: user.email,
+        email: clerkUser.email_addresses[0].email_address,
         metadata: {
           userId: user.id,
         },
