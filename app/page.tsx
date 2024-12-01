@@ -215,7 +215,7 @@ export default function Component() {
                           </li>
                         </ul>
                         <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" asChild>
-                        <Link href="/sign-in">Choose Plan</Link>
+                        <Link href="/dashboard">Choose Plan</Link>
                       </Button>                      
                       </CardContent>
                     </Card>
@@ -235,7 +235,7 @@ export default function Component() {
                           </li>
                         </ul>
                         <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" asChild>
-                        <Link href="/sign-in">Choose Plan</Link>
+                        <Link href="/dashboard">Choose Plan</Link>
                       </Button> 
                       </CardContent>
                     </Card>
