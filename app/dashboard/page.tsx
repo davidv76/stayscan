@@ -879,33 +879,22 @@ export default function StayScanDashboard() {
     setShowSubscriptionDialog(false)
     
     try {
-      const stripe = await stripePromise
-      if (!stripe) {
-        throw new Error('Stripe failed to load')
-      }
-
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ priceId: plan.stripeId }),
       })
-
+  
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
-
-      const session = await response.json()
-      const result = await stripe.redirectToCheckout({
-        sessionId: session.id,
-      })
-
-      if (result.error) {
-        console.error('Error:', result.error)
-        toast({
-          title: "Error",
-          description: "An error occurred. Please try again.",
-          variant: "destructive",
-        })
+  
+      const { url } = await response.json()
+  
+      if (url) {
+        window.location.href = url
+      } else {
+        throw new Error('No checkout URL received')
       }
     } catch (error) {
       console.error("Error handling subscription:", error)
