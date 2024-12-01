@@ -1,24 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuth } from "@clerk/nextjs/server"
-import { PrismaClient } from '@prisma/client/edge'
+import Stripe from 'stripe'
+import prisma from '@/lib/prisma'
 
-const prisma = new PrismaClient()
-
-async function getUserProperty(userId: string, propertyId: number) {
-  return await prisma.property.findFirst({
-    where: {
-      id: propertyId,
-      userId,
-    },
-  })
-}
-
-async function getMaintenanceIssue(id: number) {
-  return await prisma.maintenanceIssue.findUnique({
-    where: { id },
-    include: { property: true },
-  })
-}
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+  apiVersion: '2024-09-30.acacia',
+})
 
 export async function GET(
   request: NextRequest,
@@ -30,117 +17,45 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const id = parseInt(params.id, 10)
-    if (isNaN(id)) {
-      return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
+    const sessionId = params.id
+
+    const session = await stripe.checkout.sessions.retrieve(sessionId)
+
+    if (!session) {
+      return NextResponse.json({ error: 'Session not found' }, { status: 404 })
     }
 
-    const maintenanceIssue = await getMaintenanceIssue(id)
+    const subscription = await stripe.subscriptions.retrieve(session.subscription as string)
 
-    if (!maintenanceIssue) {
-      return NextResponse.json({ error: 'Maintenance issue not found' }, { status: 404 })
-    }
-
-    const userProperty = await getUserProperty(userId, maintenanceIssue.propertyId)
-
-    if (!userProperty) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
-    }
-
-    return NextResponse.json(maintenanceIssue)
-  } catch (error) {
-    console.error('Error fetching maintenance issue:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch maintenance issue' },
-      { status: 500 }
-    )
-  }
-}
-
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const { userId } = getAuth(request)
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const id = parseInt(params.id, 10)
-    if (isNaN(id)) {
-      return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
-    }
-
-    const body = await request.json()
-    const { title, issue, status, details } = body
-
-    const existingIssue = await getMaintenanceIssue(id)
-
-    if (!existingIssue) {
-      return NextResponse.json({ error: 'Maintenance issue not found' }, { status: 404 })
-    }
-
-    const userProperty = await getUserProperty(userId, existingIssue.propertyId)
-
-    if (!userProperty) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
-    }
-
-    const updatedIssue = await prisma.maintenanceIssue.update({
-      where: { id },
-      data: { title, issue, status, details },
+    const user = await prisma.user.findUnique({
+      where: { clerkId: userId },
+      include: { subscription: true },
     })
 
-    return NextResponse.json(updatedIssue)
-  } catch (error) {
-    console.error('Error updating maintenance issue:', error)
-    return NextResponse.json(
-      { error: 'Failed to update maintenance issue' },
-      { status: 500 }
-    )
-  }
-}
-
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
-  try {
-    const { userId } = getAuth(request)
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    const id = parseInt(params.id, 10)
-    if (isNaN(id)) {
-      return NextResponse.json({ error: 'Invalid ID' }, { status: 400 })
-    }
-
-    const existingIssue = await getMaintenanceIssue(id)
-
-    if (!existingIssue) {
-      return NextResponse.json({ error: 'Maintenance issue not found' }, { status: 404 })
-    }
-
-    const userProperty = await getUserProperty(userId, existingIssue.propertyId)
-
-    if (!userProperty) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
-    }
-
-    await prisma.maintenanceIssue.delete({
-      where: { id },
+    const updatedSubscription = await prisma.subscription.update({
+      where: { userId: user.id },
+      data: {
+        stripeSubscriptionId: subscription.id,
+        stripePriceId: subscription.items.data[0].price.id,
+        status: subscription.status,
+        currentPeriodStart: new Date(subscription.current_period_start * 1000),
+        currentPeriodEnd: new Date(subscription.current_period_end * 1000),
+      },
     })
 
-    return NextResponse.json({ message: 'Maintenance issue deleted successfully' })
+    return NextResponse.json(updatedSubscription)
   } catch (error) {
-    console.error('Error deleting maintenance issue:', error)
+    console.error('Error retrieving checkout session:', error)
     return NextResponse.json(
-      { error: 'Failed to delete maintenance issue' },
+      { error: 'Failed to retrieve checkout session' },
       { status: 500 }
     )
   }
 }
 
-export const runtime = "edge"
+export const runtime = 'edge'
+
