@@ -40,7 +40,7 @@ export default function Component() {
         </nav>
         <div className="hidden md:flex items-center ml-4">
           <Button variant="outline" className="mr-2" asChild>
-            <Link href="/sign-in">Log In</Link>
+            <Link href="/dashboard">Log In</Link>
           </Button>
           <Button asChild>
             <Link href="/sign-up">Sign Up</Link>
