@@ -255,7 +255,7 @@ export default function Component() {
                           </li>
                         </ul>
                         <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" asChild>
-                        <Link href="/sign-in">Contact Sales</Link>
+                        <Link href="/dashboard">Contact Sales</Link>
                       </Button>                     
                        </CardContent>
                     </Card>
