@@ -966,7 +966,7 @@ export default function StayScanDashboard() {
             
             useEffect(() => {
               if (property) {
-                QRCode.toDataURL(`https://stayscan.tech/property/${property.id}`)
+                QRCode.toDataURL(`https://stayscan.tech/listing/${property.id}`)
                 .then(url => setQrCodeData(url))
                 .catch(err => console.error(err))
               }
