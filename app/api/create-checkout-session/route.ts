@@ -73,12 +73,16 @@ export async function POST(request: NextRequest) {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
+      // success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
+      // cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
+      success_url: `http://localhost:3000/dashboard?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `http://localhost:3000/dashboard`,
       metadata: {
         userId: user.id,
       },
-    })
+    });
+
+    console.log('session: ',session);
 
     return NextResponse.json({ sessionId: session.id, url: session.url })
   } catch (error) {

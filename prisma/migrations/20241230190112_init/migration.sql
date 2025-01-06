@@ -1,12 +1,3 @@
--- CreateEnum
-CREATE TYPE "PropertyStatus" AS ENUM ('AVAILABLE', 'OCCUPIED', 'MAINTENANCE', 'INACTIVE');
-
--- CreateEnum
-CREATE TYPE "MaintenanceStatus" AS ENUM ('OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED');
-
--- CreateEnum
-CREATE TYPE "SubscriptionStatus" AS ENUM ('ACTIVE', 'INACTIVE', 'PAST_DUE', 'CANCELED');
-
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -23,14 +14,14 @@ CREATE TABLE "Property" (
     "name" TEXT NOT NULL,
     "location" TEXT NOT NULL,
     "description" TEXT,
-    "status" "PropertyStatus" NOT NULL DEFAULT 'AVAILABLE',
+    "status" TEXT DEFAULT 'Available',
     "amenities" TEXT,
-    "images" TEXT,
+    "images" TEXT[],
     "localFood" TEXT,
     "wifi" TEXT,
     "applianceGuides" TEXT,
-    "rubbishAndBins" TEXT,
     "houseRules" TEXT,
+    "rubbishAndBins" TEXT,
     "checkOutDay" TEXT,
     "emergencyContact" TEXT,
     "nearbyPlaces" TEXT,
@@ -48,7 +39,7 @@ CREATE TABLE "MaintenanceIssue" (
     "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
     "issue" TEXT NOT NULL,
-    "status" "MaintenanceStatus" NOT NULL DEFAULT 'OPEN',
+    "status" TEXT NOT NULL DEFAULT 'Open',
     "propertyId" INTEGER NOT NULL,
     "details" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -67,7 +58,7 @@ CREATE TABLE "Subscription" (
     "stripeCustomerId" TEXT,
     "stripePriceId" TEXT,
     "stripeSubscriptionId" TEXT,
-    "status" "SubscriptionStatus" NOT NULL,
+    "status" TEXT NOT NULL,
     "currentPeriodStart" TIMESTAMP(3) NOT NULL,
     "currentPeriodEnd" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -80,22 +71,13 @@ CREATE TABLE "Subscription" (
 CREATE UNIQUE INDEX "User_clerkId_key" ON "User"("clerkId");
 
 -- CreateIndex
-CREATE INDEX "Property_userId_idx" ON "Property"("userId");
-
--- CreateIndex
-CREATE INDEX "MaintenanceIssue_propertyId_idx" ON "MaintenanceIssue"("propertyId");
-
--- CreateIndex
 CREATE UNIQUE INDEX "Subscription_userId_key" ON "Subscription"("userId");
 
--- CreateIndex
-CREATE INDEX "Subscription_userId_idx" ON "Subscription"("userId");
+-- AddForeignKey
+ALTER TABLE "Property" ADD CONSTRAINT "Property_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Property" ADD CONSTRAINT "Property_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "MaintenanceIssue" ADD CONSTRAINT "MaintenanceIssue_propertyId_fkey" FOREIGN KEY ("propertyId") REFERENCES "Property"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "MaintenanceIssue" ADD CONSTRAINT "MaintenanceIssue_propertyId_fkey" FOREIGN KEY ("propertyId") REFERENCES "Property"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Subscription" ADD CONSTRAINT "Subscription_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

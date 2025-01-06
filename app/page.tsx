@@ -40,7 +40,7 @@ export default function Component() {
         </nav>
         <div className="hidden md:flex items-center ml-4">
           <Button variant="outline" className="mr-2" asChild>
-            <Link href="/dashboard">Log In</Link>
+            <Link href="/dashboard" className='text-white'>Log In</Link>
           </Button>
           <Button asChild>
             <Link href="/sign-up">Sign Up</Link>
@@ -74,7 +74,7 @@ export default function Component() {
           </nav>
           <div className="mt-4 flex flex-col gap-2">
             <Button variant="outline" className="w-full" asChild>
-              <Link href="/sign-in">Log In</Link>
+              <Link href="/sign-in" className='text-white'>Log In</Link>
             </Button>
             <Button className="w-full" asChild>
               <Link href="/sign-up">Sign Up</Link>
@@ -94,7 +94,7 @@ export default function Component() {
                 create engaging digital guides, streamline your hosting workflow, and enhance guest experiences                </p>
               </div>
               <div className="space-x-4">
-                <Button variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">Watch Demo</Button>
+                <Button variant="outline" className="text-white">Watch Demo</Button>
               </div>
             </div>
           </div>

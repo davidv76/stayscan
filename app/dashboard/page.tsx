@@ -617,7 +617,7 @@ export default function StayScanDashboard() {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
-      const issuesData: MaintenanceIssue[] = await response.json()
+      const issuesData: MaintenanceIssue[] = await response.json();
       setMaintenanceIssues(issuesData)
     } catch (error) {
       console.error("Error fetching maintenance issues:", error)
@@ -1076,7 +1076,7 @@ export default function StayScanDashboard() {
           placeholder="Search issues..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-sm"
+          className="max-w-sm text-black"
         />
         {isArchived && (
           <Select value={selectedPropertyForArchive} onValueChange={setSelectedPropertyForArchive}>
@@ -1084,7 +1084,7 @@ export default function StayScanDashboard() {
               <SelectValue placeholder="Select Property" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Properties</SelectItem>
+              <SelectItem value="all-properties">All Properties</SelectItem>
               {properties.map((property) => (
                 <SelectItem key={property.id} value={property.name}>{property.name}</SelectItem>
               ))}
