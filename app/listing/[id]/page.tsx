@@ -41,6 +41,7 @@ interface Property {
   reviews: { author: string; rating: number; comment: string }[];
   digitalGuide: string;
   localFood: string;
+  isAuth: boolean;
 }
 
 interface MaintenanceIssue {
@@ -65,14 +66,14 @@ export default function PropertyInfoPage() {
   const [maintenanceIssue, setMaintenanceIssue] = useState({ title: "", issue: "" })
   const [maintenanceIssues, setMaintenanceIssues] = useState<MaintenanceIssue[]>([])
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
-  const [showDescription, setShowDescription] = useState(true)
+  const [showDescription, setShowDescription] = useState(true);
 
   useEffect(() => {
     const fetchProperty = async () => {
       try {
         const response = await fetch(`/api/properties/${id}`)
         if (!response.ok) throw new Error('Failed to fetch property')
-        const data: Property = await response.json()
+        const data: Property = await response.json();
         setProperty(data)
       } catch (error) {
         console.error('Error fetching property:', error)
@@ -276,8 +277,8 @@ export default function PropertyInfoPage() {
             </div>
           </DialogContent>
         </Dialog>
-
-        <Card className="mb-8 hidden">
+          {/* if user is not logged in, can't use the maintanence issue form */}
+        <Card className={`mb-8 ${property.isAuth ? '' : "hidden"}`}>
           <CardHeader>
             <CardTitle className="text-xl md:text-2xl">Report an Issue</CardTitle>
           </CardHeader>

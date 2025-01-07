@@ -64,6 +64,8 @@ export async function GET(
 ) {
   try {
 
+    const { userId } = getAuth(request);
+    
     const propertyId = parseInt(params.id, 10)
     if (isNaN(propertyId)) {
       return NextResponse.json({ error: 'Invalid property ID' }, { status: 400 })
@@ -83,7 +85,7 @@ export async function GET(
       return NextResponse.json({ error: 'Property not found' }, { status: 404 })
     }
 
-    return NextResponse.json(property)
+    return NextResponse.json({...property, isAuth: userId && property.user.clerkId === userId});
   } catch (error) {
     return handleError(error, 'Failed to fetch property')
   }
