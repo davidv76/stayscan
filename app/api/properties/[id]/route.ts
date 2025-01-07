@@ -63,10 +63,6 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const { userId } = getAuth(request)
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
 
     const propertyId = parseInt(params.id, 10)
     if (isNaN(propertyId)) {
@@ -85,10 +81,6 @@ export async function GET(
 
     if (!property) {
       return NextResponse.json({ error: 'Property not found' }, { status: 404 })
-    }
-
-    if (property.user.clerkId !== userId) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
     return NextResponse.json(property)
