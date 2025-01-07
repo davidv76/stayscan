@@ -465,11 +465,18 @@ export default function StayScanDashboard() {
         }),
       })
 
-      if (!response.ok) {
-        throw new Error('Failed to generate property details')
+      // if (!response.ok) {
+      //   throw new Error('Failed to generate property details')
+      // }
+
+      const data = await response.json();
+
+      
+      if(data.error){
+        throw new Error (data.error);
       }
 
-      const data = await response.json()
+
       setNewProperty(prev => ({
         ...prev,
         houseRules: data.houseRules,
@@ -484,11 +491,11 @@ export default function StayScanDashboard() {
         description: "Property details generated successfully!",
         variant: "default",
       })
-    } catch (error) {
-      console.error('Error generating property details:', error)
+    } catch (error: any) {
+      console.error('Error generating property details:', error);
       toast({
         title: "Error",
-        description: "Failed to generate property details. Please try again.",
+        description: error,
         variant: "destructive",
       })
     } finally {
@@ -523,11 +530,11 @@ export default function StayScanDashboard() {
         description: "Property description generated successfully!",
         variant: "default",
       })
-    } catch (error) {
-      console.error('Error generating description:', error)
+    } catch (error: any) {
+      console.error(error)
       toast({
         title: "Error",
-        description: "Failed to generate property description. Please try again.",
+        description: error,
         variant: "destructive",
       })
     } finally {

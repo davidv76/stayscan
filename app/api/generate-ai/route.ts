@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
   if (!process.env.OPENAI_API_KEY) {
     return NextResponse.json({ error: 'OpenAI API key not configured' }, { status: 500 })
   }
-
+console.log('open ai api checks: ',process.env.OPENAI_API_KEY);
   try {
     const { name, location } = await request.json()
 
@@ -46,9 +46,9 @@ export async function POST(request: NextRequest) {
     const parsedContent = JSON.parse(generatedContent)
 
     return NextResponse.json(parsedContent)
-  } catch (error) {
-    console.error('Error generating property details:', error)
-    return NextResponse.json({ error: 'Error generating property details' }, { status: 500 })
+  } catch (error: any) {
+    console.error('Error generating property details:', error.message);
+    return NextResponse.json({ error: error.message }, { status: 429 })
   }
 }
 
