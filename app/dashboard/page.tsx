@@ -238,7 +238,7 @@ export default function StayScanDashboard() {
     // Check if Stripe is blocked
     const checkStripe = async () => {
       try {
-        const stripe = await stripePromise
+        const stripe = await stripePromise;
         if (!stripe) {
           setStripeBlocked(true)
         }
@@ -889,7 +889,7 @@ export default function StayScanDashboard() {
       const response = await fetch('/api/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priceId: plan.stripeId }),
+        body: JSON.stringify({ priceId: plan.stripeId, name: plan.name, price: plan.price, propertyLimit: plan.propertyLimit }),
       })
   
       if (!response.ok) {
@@ -1534,8 +1534,8 @@ export default function StayScanDashboard() {
               <AvatarFallback>{user?.fullName?.[0]}</AvatarFallback>
             </Avatar>
             <div>
-              <h3 className="text-2xl font-semibold text-gray-900">{user?.fullName}</h3>
-              <p className="text-gray-500">{user?.primaryEmailAddress?.emailAddress}</p>
+              <h3 className="text-2xl font-semibold text-white">{user?.fullName}</h3>
+              <p className="text-white">{user?.primaryEmailAddress?.emailAddress}</p>
             </div>
           </CardContent>
         </MotionCard>
@@ -1547,19 +1547,19 @@ export default function StayScanDashboard() {
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <Label className="text-emerald-600">Current Plan</Label>
-                            <Input value={subscription.name} readOnly className="bg-white" />
+                            <div className='text-white bg-black border rounded p-2 w-full'>{subscription.name}</div>
                           </div>
                           <div>
                             <Label className="text-emerald-600">Price</Label>
-                            <Input value={`$${subscription.price}/month`} readOnly className="bg-white" />
+                            <div className='text-white bg-black border rounded p-2 w-full'>{`$${subscription.price}/month`}</div>
                           </div>
                           <div>
                             <Label className="text-emerald-600">Property Limit</Label>
-                            <Input value={subscription.propertyLimit} readOnly className="bg-white" />
+                            <div className='text-white bg-black border rounded p-2 w-full'>{subscription.propertyLimit}</div>
                           </div>
                           <div>
                             <Label className="text-emerald-600">Next Billing Date</Label>
-                            <Input value={new Date(subscription.currentPeriodEnd).toLocaleDateString()} readOnly className="bg-white" />
+                            <div className='text-white bg-black border rounded p-2 w-full'>{new Date(subscription.currentPeriodEnd).toLocaleDateString()}</div>
                           </div>
                         </div>
                       ) : (
@@ -1573,14 +1573,14 @@ export default function StayScanDashboard() {
                     {/* Preferences */}
                     <div className="space-y-2">
                       <h3 className="text-lg font-semibold text-emerald-700">Preferences</h3>
-                      <div className="flex items-center justify-between">
+                      {/* <div className="flex items-center justify-between">
                         <Label htmlFor="darkMode" className="text-emerald-600">Dark Mode</Label>
                         <Switch
                           id="darkMode"
                           checked={isDarkMode}
                           onCheckedChange={setIsDarkMode}
                         />
-                      </div>
+                      </div> */}
                       <div className="flex items-center justify-between">
                         <Label htmlFor="language" className="text-emerald-600">Language</Label>
                         <Select value={language} onValueChange={setLanguage}>

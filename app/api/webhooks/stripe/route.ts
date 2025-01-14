@@ -13,8 +13,9 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
 export async function POST(req: NextRequest) {
+  console.log('webhook being called💥💥');
   const rawBody = await req.text()
-  const sig = req.headers.get('stripe-signature')
+  const sig = req.headers.get('stripe-signature');
 
   if (!sig) {
     return NextResponse.json({ error: 'No Stripe signature found' }, { status: 400 })
@@ -84,6 +85,7 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   }
 
   try {
+    console.log('pushing database')
     const updatedSubscription = await prisma.subscription.upsert({
       where: { userId: userId },
       update: subscriptionData,

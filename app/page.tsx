@@ -9,7 +9,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import Link from "next/link"
 import { Check, Building, Users, BarChart, Key, Wrench, Shield, Menu, X } from "lucide-react"
 import { useState } from "react"
-import { SVGProps } from 'react'
+import { SVGProps } from 'react';
+import logo from '../assets/images/stayscan-logo.jpg';
+import Image from 'next/image';
 
 export default function Component() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -18,7 +20,8 @@ export default function Component() {
     <div className="flex flex-col min-h-screen w-full bg-white text-gray-800">
       <header className="px-4 lg:px-6 h-16 flex items-center border-b border-gray-200 sticky top-0 bg-white z-50">
         <Link className="flex items-center justify-center" href="#">
-          <BuildingIcon className="h-6 w-6 text-blue-600" />
+          {/* <BuildingIcon className="h-6 w-6 text-blue-600" /> */}
+          <Image className='w-14 h-14 object-cover rounded-full' src={logo} alt="stayscan-logo"  />
           <span className="ml-2 text-xl font-bold text-gray-900">Stayscan</span>
         </Link>
         <nav className="hidden md:flex ml-auto gap-4 sm:gap-6">

@@ -100,22 +100,26 @@ export const GET = checkAuth(async (userId: string) => {
         where: { clerkId: userId },
         include: { subscription: true },
       })
-    )
+    );
+
+    console.log('user check: 💥', user)
 
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
+    // if (user.subscription?.stripePriceId) {
+    //   const updatedSubscription = await updateSubscriptionFromStripe(user.subscription)
+    //   console.log('Subscription updated from Stripe:💥', JSON.stringify(updatedSubscription, null, 2))
+    //   return NextResponse.json(updatedSubscription)
+    // }
+
     if (!user.subscription) {
+      console.log('free plan code running')
       const freeSubscription = await createFreeSubscription(user.id)
-      return NextResponse.json(freeSubscription)
+      return NextResponse.json(freeSubscription);
     }
 
-    if (user.subscription.stripeSubscriptionId) {
-      const updatedSubscription = await updateSubscriptionFromStripe(user.subscription)
-      console.log('Subscription updated from Stripe:', JSON.stringify(updatedSubscription, null, 2))
-      return NextResponse.json(updatedSubscription)
-    }
 
     return NextResponse.json(user.subscription)
   } catch (error) {

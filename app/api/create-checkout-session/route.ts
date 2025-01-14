@@ -15,9 +15,10 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { priceId } = body
+    const { priceId, name, price, propertyLimit} = body;
 
-    if (!priceId) {
+    console.log("plaen name: ", name)
+    if (!priceId || !name) {
       return NextResponse.json({ error: 'Price ID is required' }, { status: 400 })
     }
 
@@ -30,7 +31,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    let customer
+    let customer;
     if (user.subscription?.stripeCustomerId) {
       customer = await stripe.customers.retrieve(user.subscription.stripeCustomerId)
     } else {
@@ -46,22 +47,27 @@ export async function POST(request: NextRequest) {
         metadata: {
           userId: user.id,
         },
-      })
-      await prisma.subscription.upsert({
+      });
+
+
+   await prisma.subscription.upsert({
         where: { userId: user.id },
         update: { stripeCustomerId: customer.id },
         create: {
           userId: user.id,
           stripeCustomerId: customer.id,
-          status: 'inactive',
-          name: 'Free',
-          price: 0,
-          propertyLimit: 1,
+          stripePriceId: priceId,
+          status: name !== 'free' ? 'active' : 'inactive',
+          name: name,
+          price: price,
+          propertyLimit: propertyLimit,
           currentPeriodStart: new Date(),
           currentPeriodEnd: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
         },
       })
-    }
+    };
+
+
 
     const session = await stripe.checkout.sessions.create({
       customer: customer.id,
