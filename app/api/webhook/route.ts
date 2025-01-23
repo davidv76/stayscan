@@ -70,7 +70,10 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
 
   const price = await stripe.prices.retrieve(subscription.items.data[0].price.id)
   const productId = price.product as string
-  const product = await stripe.products.retrieve(productId)
+  const product = await stripe.products.retrieve(productId);
+
+  console.log('webhook propertry: ', customer.metadata.propertyLimit);
+  console.log('webhook product: ', product);
 
   const subscriptionData = {
     stripeSubscriptionId: subscription.id,
@@ -79,7 +82,7 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
     status: subscription.status,
     name: product.name,
     price: price.unit_amount ? price.unit_amount / 100 : 0,
-    propertyLimit: parseInt(product.metadata.propertyLimit || '1'),
+    propertyLimit: parseInt(customer.metadata.propertyLimit || '1'),
     currentPeriodStart: new Date(subscription.current_period_start * 1000),
     currentPeriodEnd: new Date(subscription.current_period_end * 1000),
   }

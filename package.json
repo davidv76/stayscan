@@ -46,6 +46,7 @@
     "react-dom": "^18",
     "react-to-print": "^3.0.1",
     "stripe": "^17.2.0",
+    "styled-components": "^6.1.14",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7"
   },

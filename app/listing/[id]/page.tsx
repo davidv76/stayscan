@@ -278,7 +278,7 @@ export default function PropertyInfoPage() {
           </DialogContent>
         </Dialog>
           {/* if user is not logged in, can't use the maintanence issue form */}
-        <Card className={`mb-8 ${property.isAuth ? '' : "hidden"}`}>
+        {/*<Card className={`mb-8 ${property.isAuth ? '' : "hidden"}`}>
           <CardHeader>
             <CardTitle className="text-xl md:text-2xl">Report an Issue</CardTitle>
           </CardHeader>
@@ -298,13 +298,14 @@ export default function PropertyInfoPage() {
             </div>
           </CardContent>
         </Card>
+        */}
 
         <Card>
           <CardHeader>
             <CardTitle className="text-xl md:text-2xl">Digital Guide</CardTitle>
           </CardHeader>
           <CardContent className="p-4 md:p-6">
-            <p className="text-sm md:text-base text-muted-foreground whitespace-pre-wrap">{property.digitalGuide}</p>
+            <p className="text-sm md:text-base text-muted-foreground whitespace-pre-wrap">{property?.digitalGuide?.replace(/[*#]/g, '')}</p>
           </CardContent>
         </Card>
       </div>

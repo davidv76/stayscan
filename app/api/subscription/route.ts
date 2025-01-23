@@ -77,13 +77,15 @@ const updateSubscriptionFromStripe = async (subscription: Subscription): Promise
   const price = await stripe.prices.retrieve(stripeSubscription.items.data[0].price.id)
   const product = await stripe.products.retrieve(price.product as string)
 
+  console.log('subsInfo: ',stripeSubscription)
+
   return await retryOperation(() =>
     prisma.subscription.update({
       where: { id: subscription.id },
       data: {
         name: product.name,
         price: price.unit_amount ? price.unit_amount / 100 : 0,
-        propertyLimit: parseInt(product.metadata.propertyLimit || '1'),
+        propertyLimit: 20,
         status: stripeSubscription.status,
         stripePriceId: price.id,
         currentPeriodStart: new Date(stripeSubscription.current_period_start * 1000),
@@ -102,17 +104,14 @@ export const GET = checkAuth(async (userId: string) => {
       })
     );
 
-    console.log('user check: 💥', user)
-
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    // if (user.subscription?.stripePriceId) {
-    //   const updatedSubscription = await updateSubscriptionFromStripe(user.subscription)
-    //   console.log('Subscription updated from Stripe:💥', JSON.stringify(updatedSubscription, null, 2))
-    //   return NextResponse.json(updatedSubscription)
-    // }
+    if (user.subscription?.stripeSubscriptionId) {
+      const updatedSubscription = await updateSubscriptionFromStripe(user.subscription);
+      return NextResponse.json(updatedSubscription);
+    }
 
     if (!user.subscription) {
       console.log('free plan code running')

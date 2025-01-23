@@ -15,10 +15,11 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { priceId, name, price, propertyLimit} = body;
+    const { priceId, propertyLimit} = body;
+    console.log('Limit:💥',propertyLimit)
 
-    console.log("plaen name: ", name)
-    if (!priceId || !name) {
+   
+    if (!priceId) {
       return NextResponse.json({ error: 'Price ID is required' }, { status: 400 })
     }
 
@@ -31,9 +32,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
+
     let customer;
     if (user.subscription?.stripeCustomerId) {
-      customer = await stripe.customers.retrieve(user.subscription.stripeCustomerId)
+      customer = await stripe.customers.update(user.subscription?.stripeCustomerId, {
+        metadata: {
+          propertyLimit: propertyLimit.toString(), // Metadata values must be strings
+        },
+      })
     } else {
       // Fetch the user's email from Clerk
       const clerkUser = await fetch(`https://api.clerk.dev/v1/users/${userId}`, {
@@ -46,28 +52,13 @@ export async function POST(request: NextRequest) {
         email: clerkUser.email_addresses[0].email_address,
         metadata: {
           userId: user.id,
+          propertyLimit: propertyLimit.toString()
         },
       });
-
-
-   await prisma.subscription.upsert({
-        where: { userId: user.id },
-        update: { stripeCustomerId: customer.id },
-        create: {
-          userId: user.id,
-          stripeCustomerId: customer.id,
-          stripePriceId: priceId,
-          status: name !== 'free' ? 'active' : 'inactive',
-          name: name,
-          price: price,
-          propertyLimit: propertyLimit,
-          currentPeriodStart: new Date(),
-          currentPeriodEnd: new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
-        },
-      })
     };
 
 
+    console.log('ID found!🍻',customer);
 
     const session = await stripe.checkout.sessions.create({
       customer: customer.id,
@@ -79,12 +70,13 @@ export async function POST(request: NextRequest) {
           quantity: 1,
         },
       ],
+      // TODO: Uncomment below lines when uploading in production
       success_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
       // success_url: `http://localhost:3000/dashboard?session_id={CHECKOUT_SESSION_ID}`,
       // cancel_url: `http://localhost:3000/dashboard`,
       metadata: {
-        userId: user.id,
+        userId: user.id
       },
     });
 
