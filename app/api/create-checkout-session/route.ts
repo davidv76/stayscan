@@ -16,7 +16,8 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     const { priceId, propertyLimit} = body;
-    console.log('Limit:💥',propertyLimit)
+    console.log('Limit:💥',propertyLimit);
+    console.log('webhook key: ',process.env.STRIPE_WEBHOOK_SECRET);
 
    
     if (!priceId) {

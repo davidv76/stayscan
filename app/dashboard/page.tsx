@@ -368,6 +368,10 @@ export default function StayScanDashboard() {
     };
 
     checkStripe();
+
+
+    console.log('webhook key: ', process.env.STRIPE_WEBHOOK_SECRET);
+    console.log('publish key: ',process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
   }, []);
 
 
@@ -1196,6 +1200,8 @@ export default function StayScanDashboard() {
 
   // Subscription handling
   const handleSubscription = async (plan: SubscriptionPlan) => {
+
+    console.log('webhook key: ',process.env.STRIPE_WEBHOOK_SECRET);
 
     try {
       setIsBtnLoading(prev=> ({ ...prev, [plan.name]: true }));
