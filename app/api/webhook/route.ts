@@ -13,7 +13,6 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
 
 export async function POST(req: NextRequest) {
-  console.log('webhook being called💥💥');
   const rawBody = await req.text()
   const sig = req.headers.get('stripe-signature');
 
@@ -56,8 +55,6 @@ export async function POST(req: NextRequest) {
 }
 
 async function handleSubscriptionChange(subscription: Stripe.Subscription) {
-  console.log('Processing subscription change:', subscription.id)
-
   const customerId = subscription.customer as string
   const customer = await stripe.customers.retrieve(customerId) as Stripe.Customer
 
@@ -72,9 +69,6 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   const productId = price.product as string
   const product = await stripe.products.retrieve(productId);
 
-  console.log('webhook propertry: ', customer.metadata.propertyLimit);
-  console.log('webhook product: ', product);
-
   const subscriptionData = {
     stripeSubscriptionId: subscription.id,
     stripePriceId: subscription.items.data[0].price.id,
@@ -88,7 +82,7 @@ async function handleSubscriptionChange(subscription: Stripe.Subscription) {
   }
 
   try {
-    console.log('pushing database')
+
     const updatedSubscription = await prisma.subscription.upsert({
       where: { userId: userId },
       update: subscriptionData,

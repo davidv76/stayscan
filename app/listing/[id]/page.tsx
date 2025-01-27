@@ -31,7 +31,7 @@ interface Property {
   location: string;
   images: string;
   description: string;
-  wifi: string;
+  wifi: {name:string; password: string};
   houseRules: string;
   applianceGuides: string;
   checkOutDay: string;
@@ -51,7 +51,7 @@ interface MaintenanceIssue {
   status: 'Open' | 'In Progress' | 'Resolved';
 }
 
-type CategoryContent = string | { name: string; instructions: string; fileUrl: string }[] | { name: string; description: string; distance: string }[];
+type CategoryContent = string | { name: string; instructions: string; fileUrl: string }[] | { name: string; description: string; distance: string }[] | {name: string; password: string};
 
 interface Category {
   name: string;
@@ -98,6 +98,7 @@ export default function PropertyInfoPage() {
     fetchProperty()
     fetchMaintenanceIssues()
   }, [id])
+
 
   const reportMaintenanceIssue = async () => {
     if (maintenanceIssue.title.trim() && maintenanceIssue.issue.trim()) {
@@ -147,7 +148,6 @@ export default function PropertyInfoPage() {
     { name: 'Check Out', icon: CalendarCheck, content: property.checkOutDay },
   ]
   const renderCategoryContent = (category: Category) => {
-    console.log('Rendering category:', category.name, 'Content:', category.content);
     if (category.name === 'Local Attractions' && Array.isArray(category.content)) {
       return (
         <div className="space-y-4">
@@ -173,11 +173,25 @@ export default function PropertyInfoPage() {
                 const [name, number] = contact.split(':').map(item => item.trim())
                 return (
                   <div key={index} className="flex justify-between items-center py-2 border-b border-gray-200 last:border-b-0">
-                    <span className="font-medium text-gray-700">{name}</span>
+                    <span className="font-medium text-gray-400">Phone: {name}</span>
                     <a href={`tel:${number}`} className="text-blue-600 hover:text-blue-800 transition-colors duration-200">{number}</a>
                   </div>
                 )
               })}
+            </div>
+          </CardContent>
+        </Card>
+      )
+    } else if(category.name === "Wifi"){
+
+      const wifiDetails = category.content as {name: string; password: string}
+
+      return(
+        <Card>
+          <CardContent>
+              <div className='px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors duration-200 cursor-pointer gap-1'>
+                <p className='px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors duration-200'>Network name: {wifiDetails.name}</p>
+                <p className='px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors duration-200'>Password: {wifiDetails.password}</p>
             </div>
           </CardContent>
         </Card>
@@ -204,9 +218,7 @@ export default function PropertyInfoPage() {
                     </span>
                   </Link>
                 )
-              }) : 
-              'No information available'
-            }
+              }) : 'No content available'}
           </div>
         </CardContent>
       </Card>

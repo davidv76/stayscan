@@ -77,7 +77,6 @@ const updateSubscriptionFromStripe = async (subscription: Subscription): Promise
   const price = await stripe.prices.retrieve(stripeSubscription.items.data[0].price.id)
   const product = await stripe.products.retrieve(price.product as string)
 
-  console.log('subsInfo: ',stripeSubscription)
 
   return await retryOperation(() =>
     prisma.subscription.update({
@@ -85,7 +84,7 @@ const updateSubscriptionFromStripe = async (subscription: Subscription): Promise
       data: {
         name: product.name,
         price: price.unit_amount ? price.unit_amount / 100 : 0,
-        propertyLimit: 20,
+        propertyLimit: subscription.propertyLimit,
         status: stripeSubscription.status,
         stripePriceId: price.id,
         currentPeriodStart: new Date(stripeSubscription.current_period_start * 1000),
@@ -114,7 +113,6 @@ export const GET = checkAuth(async (userId: string) => {
     }
 
     if (!user.subscription) {
-      console.log('free plan code running')
       const freeSubscription = await createFreeSubscription(user.id)
       return NextResponse.json(freeSubscription);
     }

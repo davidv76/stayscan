@@ -97,7 +97,7 @@ import {
 import { loadStripe } from "@stripe/stripe-js";
 import QRCode from "qrcode";
 import BtnSpinner from "@/components/ui/btnSpinner";
-
+import AddressSuggestions from "@/components/ui/addressSuggestions";
 
 // Define color scheme
 const colors = {
@@ -112,6 +112,79 @@ const colors = {
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 );
+
+// Typescript interfaces
+
+interface MaintenanceIssue {
+  id: string;
+  status: string;
+  title: string;
+  issue: string;
+  property?: {
+    name: string;
+  };
+}
+
+interface WifiNetwork {
+  name: string;
+  password: string;
+}
+
+interface Property {
+  id: string;
+  wifi: WifiNetwork;
+  rubbishAndBins: string;
+  localFood: string;
+  applianceGuides: string;
+  name: string;
+  location: string;
+  description: string;
+  amenities: string;
+  images: string;
+  status: "active" | "inactive";
+  qrScans: number;
+  emergencyContact: string;
+  nearbyPlaces: string;
+  checkOutDay: string;
+  houseRules: string;
+  digitalGuide: string;
+}
+
+interface Subscription {
+  name: string;
+  propertyLimit: number;
+  price: number;
+  currentPeriodEnd: Date;
+}
+
+interface SubscriptionPlan {
+  name: string;
+  price: number;
+  propertyLimit: number;
+  stripeId: string;
+}
+
+// Define subscription plans
+const subscriptionPlans: SubscriptionPlan[] = [
+  {
+    name: "basic",
+    price: 9.99,
+    propertyLimit: 5,
+    stripeId: "price_1QkKskBy9Ue4ijcYwlExvrjV",
+  },
+  {
+    name: "pro",
+    price: 19.99,
+    propertyLimit: 15,
+    stripeId: "price_1QkKt1By9Ue4ijcY7uomvOeI",
+  },
+  {
+    name: "enterprise",
+    price: 49.99,
+    propertyLimit: 50,
+    stripeId: "price_1QkKtHBy9Ue4ijcYFk2Emofg",
+  },
+];
 
 // Main dashboard component
 export default function StayScanDashboard() {
@@ -133,7 +206,10 @@ export default function StayScanDashboard() {
     image: null,
     emergencyContact: "",
     rubbishAndBins: "",
-    wifi: "",
+    wifi: {
+      name: "",
+      password: "",
+    },
     localFood: "",
     applianceGuides: "",
     nearbyPlaces: "",
@@ -178,7 +254,9 @@ export default function StayScanDashboard() {
     useState("");
   const [activeEditTab, setActiveEditTab] = useState("general");
   const [isLoading, setIsLoading] = useState(true);
-  const [isBtnLoading, setIsBtnLoading] = useState<{ [key: string]: boolean }>({});
+  const [isBtnLoading, setIsBtnLoading] = useState<{ [key: string]: boolean }>(
+    {}
+  );
   const [error, setError] = useState<string | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState<MaintenanceIssue | null>(
@@ -189,6 +267,8 @@ export default function StayScanDashboard() {
   const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
   const searchParams = useSearchParams();
   const MotionCard = motion(Card);
+
+  const [openFinalReview, setOpenFinalReview] = useState(false);
 
   const sortIssues = useCallback(
     (issues: MaintenanceIssue[]) => {
@@ -258,71 +338,6 @@ export default function StayScanDashboard() {
     );
     setSortColumn(column);
   };
-  interface MaintenanceIssue {
-    id: string;
-    status: string;
-    title: string;
-    issue: string;
-    property?: {
-      name: string;
-    };
-  }
-
-  interface Property {
-    id: string;
-    wifi: string;
-    rubbishAndBins: string;
-    localFood: string;
-    applianceGuides: string;
-    name: string;
-    location: string;
-    description: string;
-    amenities: string;
-    images: string;
-    status: "active" | "inactive";
-    qrScans: number;
-    emergencyContact: string;
-    nearbyPlaces: string;
-    checkOutDay: string;
-    houseRules: string;
-    digitalGuide: string;
-  }
-
-  interface Subscription {
-    name: string;
-    propertyLimit: number;
-    price: number;
-    currentPeriodEnd: Date;
-  }
-
-  interface SubscriptionPlan {
-    name: string;
-    price: number;
-    propertyLimit: number;
-    stripeId: string;
-  }
-
-  // Define subscription plans
-  const subscriptionPlans: SubscriptionPlan[] = [
-    {
-      name: "basic",
-      price: 9.99,
-      propertyLimit: 5,
-      stripeId: "price_1QkKskBy9Ue4ijcYwlExvrjV",
-    },
-    {
-      name: "pro",
-      price: 19.99,
-      propertyLimit: 15,
-      stripeId: "price_1QkKt1By9Ue4ijcY7uomvOeI",
-    },
-    {
-      name: "enterprise",
-      price: 49.99,
-      propertyLimit: 50,
-      stripeId: "price_1QkKtHBy9Ue4ijcYFk2Emofg",
-    },
-  ];
 
   // Effect hooks
 
@@ -368,14 +383,7 @@ export default function StayScanDashboard() {
     };
 
     checkStripe();
-
-
-    console.log('webhook key: ', process.env.STRIPE_WEBHOOK_SECRET);
-    console.log('publish key: ',process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
   }, []);
-
-
-  console.log('property: ',subscription?.propertyLimit)
 
   const renderAddPropertyStep = () => {
     switch (addPropertyStep) {
@@ -404,9 +412,9 @@ export default function StayScanDashboard() {
                 htmlFor="location"
                 className="text-sm font-medium text-emerald-700"
               >
-                Location
+                Address
               </Label>
-              <Input
+              {/* <Input
                 id="location"
                 value={newProperty.location}
                 onChange={(e) =>
@@ -414,7 +422,8 @@ export default function StayScanDashboard() {
                 }
                 className="w-full border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
                 placeholder="e.g. 867 Champlin Mountains, Howetown, WI "
-              />
+              /> */}
+              <AddressSuggestions address={newProperty} setAddress={setNewProperty} />
             </div>
           </div>
         );
@@ -453,8 +462,19 @@ export default function StayScanDashboard() {
           {
             id: "wifi",
             title: "WiFi",
-            placeholder: "e.g. Network Name: MyWiFi, Password: 12345",
             icon: <Wifi className="h-4 w-4" />,
+            inputs: [
+              {
+                id: "name",
+                title: "Network name",
+                placeholder: "Network Name",
+              },
+              {
+                id: "password",
+                title: "Password",
+                placeholder: "Password",
+              },
+            ],
           },
           {
             id: "localFood",
@@ -544,22 +564,47 @@ export default function StayScanDashboard() {
                     )}
                   </CardHeader>
                   <CardContent className="py-2">
-                    <Textarea
-                      id={card.id}
-                      value={
-                        newProperty[
-                          card.id as keyof typeof newProperty
-                        ] as string
-                      }
-                      onChange={(e) =>
-                        setNewProperty({
-                          ...newProperty,
-                          [card.id]: e.target.value,
-                        })
-                      }
-                      className="w-full text-xs border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
-                      placeholder={card.placeholder}
-                    />
+                    {card?.inputs ? (
+                      card.inputs.map((item) => (
+                        <Input
+                          onChange={(e) =>
+                            setNewProperty({
+                              ...newProperty,
+                              [card.id]: {
+                                ...newProperty.wifi,
+                                [item.id]: e.target.value,
+                              },
+                            })
+                          }
+                          id={item.id}
+                          className="w-full mb-2 text-xs border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
+                          value={
+                            newProperty.wifi[
+                              item.id as keyof typeof newProperty.wifi
+                            ] as string
+                          }
+                          key={item.id}
+                          placeholder={item.placeholder}
+                        />
+                      ))
+                    ) : (
+                      <Textarea
+                        id={card.id}
+                        value={
+                          newProperty[
+                            card.id as keyof typeof newProperty
+                          ] as string
+                        }
+                        onChange={(e) =>
+                          setNewProperty({
+                            ...newProperty,
+                            [card.id]: e.target.value,
+                          })
+                        }
+                        className="w-full text-xs border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
+                        placeholder={card.placeholder}
+                      />
+                    )}
                   </CardContent>
                 </Card>
               ))}
@@ -629,10 +674,10 @@ export default function StayScanDashboard() {
                 htmlFor="digitalGuide"
                 className="text-sm font-medium text-emerald-700"
               >
-                Digital Guide
+                Create Your Digital Guide with AI
               </Label>
               <div className="flex space-x-2">
-                <Textarea
+                {/* <Textarea
                   id="digitalGuide"
                   name="digitalGuide"
                   value={newProperty.digitalGuide}
@@ -647,18 +692,19 @@ export default function StayScanDashboard() {
                   }}
                   className="flex-grow h-32 border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
                   placeholder="Generate or enter a digital guide for your property (max 200 words)"
-                />
+                /> */}
                 <Button
                   onClick={generateDigitalGuide}
                   disabled={isGeneratingGuide}
+                  size="lg"
                   className="bg-emerald-600 hover:bg-emerald-700 text-white"
                 >
-                  {isGeneratingGuide ? "Generating..." : "Generate"}
+                  {isGeneratingGuide ? "Generating..." : "CREATE GUEST GUIDE"}
                 </Button>
               </div>
-              <p className="text-sm text-gray-500 mt-1">
+              {/* <p className="text-sm text-gray-500 mt-1">
                 {newProperty.digitalGuide.trim().split(/\s+/).length}/200 words
-              </p>
+              </p> */}
             </div>
           </div>
         );
@@ -705,9 +751,9 @@ export default function StayScanDashboard() {
         }),
       });
 
-      // if (!response.ok) {
-      //   throw new Error('Failed to generate property details')
-      // }
+      if (!response.ok) {
+        throw new Error('Failed to generate property details')
+      }
 
       const data = await response.json();
 
@@ -717,12 +763,13 @@ export default function StayScanDashboard() {
 
       setNewProperty((prev) => ({
         ...prev,
+        applianceGuides: data.applianceGuides,
         houseRules: data.houseRules,
         nearbyPlaces: data.nearbyPlaces,
         amenities: data.amenities,
-        localFood: data.localFood,
+        localFood: data.localFood?.map((item: {restaurantName: string; distance: string; websiteUrl: string})=> (`${item.restaurantName} - ${item.distance} away \n ${item.websiteUrl}`)),
         checkOutDay: data.checkOutDay,
-        rubbishAndBins: JSON.stringify(data.rubbishAndBins),
+        rubbishAndBins: data.rubbishAndBins,
       }));
       toast({
         title: "Success",
@@ -801,6 +848,7 @@ export default function StayScanDashboard() {
 
   const generateDigitalGuide = async () => {
     setIsGeneratingGuide(true);
+    
     try {
       const response = await fetch("/api/generate-guide", {
         method: "POST",
@@ -836,6 +884,8 @@ export default function StayScanDashboard() {
         description: "Digital guide generated successfully!",
         variant: "default",
       });
+
+      setOpenFinalReview(true);
     } catch (error) {
       console.error("Error generating digital guide:", error);
       toast({
@@ -891,7 +941,7 @@ export default function StayScanDashboard() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const data = await response.json();
-      console.log('current subs',data)
+
       setSubscription(data);
       setCurrentSubscription({ name: data.name }); // Use setCurrentSubscription here
     } catch (error) {
@@ -1006,13 +1056,13 @@ export default function StayScanDashboard() {
         }
 
         const addedProperty = await response.json();
-        console.log("Property added:", addedProperty);
+  
         setProperties((prevProperties) => [...prevProperties, addedProperty]);
         setNewProperty({
           name: "",
           location: "",
           description: "",
-          wifi: "",
+          wifi: { name: "", password: "" },
           localFood: "",
           applianceGuides: "",
           rubbishAndBins: "",
@@ -1033,6 +1083,7 @@ export default function StayScanDashboard() {
           variant: "default",
         });
         setIsAddPropertyDialogOpen(false); // Close the dialog
+        setOpenFinalReview(false); //close revivew dialog
         setAddPropertyStep(1); // Reset the step to 1 for the next time the dialog is opened
       } catch (error) {
         console.error("Error adding property:", error);
@@ -1077,7 +1128,7 @@ export default function StayScanDashboard() {
   };
 
   const updateProperty = async (updatedProperty: Property) => {
-    console.log("Updating property:", updatedProperty); // Add this line for debugging
+
     try {
       const response = await fetch(`/api/properties/${updatedProperty.id}`, {
         method: "PUT",
@@ -1095,7 +1146,7 @@ export default function StayScanDashboard() {
       }
 
       const updatedPropertyData = await response.json();
-      console.log("Updated property data:", updatedPropertyData); // Add this line for debugging
+  
       setProperties((prevProperties) =>
         prevProperties.map((prop) =>
           prop.id === updatedPropertyData.id ? updatedPropertyData : prop
@@ -1201,16 +1252,14 @@ export default function StayScanDashboard() {
   // Subscription handling
   const handleSubscription = async (plan: SubscriptionPlan) => {
 
-    console.log('webhook key: ',process.env.STRIPE_WEBHOOK_SECRET);
-
     try {
-      setIsBtnLoading(prev=> ({ ...prev, [plan.name]: true }));
+      setIsBtnLoading((prev) => ({ ...prev, [plan.name]: true }));
       const response = await fetch("/api/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           priceId: plan.stripeId,
-          propertyLimit: plan.propertyLimit
+          propertyLimit: plan.propertyLimit,
         }),
       });
 
@@ -1234,8 +1283,8 @@ export default function StayScanDashboard() {
         description: "Failed to process subscription. Please try again.",
         variant: "destructive",
       });
-    } finally{
-      setIsBtnLoading(prev=> ({ ...prev, [plan.name]: false }));
+    } finally {
+      setIsBtnLoading((prev) => ({ ...prev, [plan.name]: false }));
     }
   };
 
@@ -1302,17 +1351,15 @@ export default function StayScanDashboard() {
       }
     }, [property]);
 
-
-
-  //   <div class="container">
-  //   <h1>${property.name}</h1>
-  //   <img src="${qrCodeData}" alt="QR Code for ${property.name}" />
-  //   <p>Scan this QR code to access property information</p>
-  //   <div class="guide">
-  //     <strong>Digital Guide:</strong>
-  //     ${property.digitalGuide}
-  //   </div>
-  // </div>
+    //   <div class="container">
+    //   <h1>${property.name}</h1>
+    //   <img src="${qrCodeData}" alt="QR Code for ${property.name}" />
+    //   <p>Scan this QR code to access property information</p>
+    //   <div class="guide">
+    //     <strong>Digital Guide:</strong>
+    //     ${property.digitalGuide}
+    //   </div>
+    // </div>
 
     // QR Code functions
     const handlePrint = () => {
@@ -1447,7 +1494,6 @@ export default function StayScanDashboard() {
 
     if (!property) return null;
 
-
     return (
       <Dialog open={showQRCode} onOpenChange={setShowQRCode}>
         <DialogContent className="sm:max-w-[425px]">
@@ -1480,7 +1526,7 @@ export default function StayScanDashboard() {
               <Button
                 onClick={handleDownload}
                 variant="outline"
-                className="border-emerald-600 text-emerald-600 hover:bg-emerald-50"
+                className="border-emerald-600 text-emerald-600 hover:bg-emerald-500"
               >
                 <Download className="mr-2 h-4 w-4" />
                 Download
@@ -1713,7 +1759,8 @@ export default function StayScanDashboard() {
             </div>
             {/* Sidebar Navigation */}
             <nav className="flex-1 space-y-3 p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-[#1e3932] scrollbar-track-[#086241]">
-              {["properties", "maintenance", "settings"].map((tab) => (
+              {/*add "maintenance" to the array below to show the maintenance tab and page  */}
+              {["properties", "settings"].map((tab) => (
                 <Tooltip key={tab}>
                   <TooltipTrigger asChild>
                     <Button
@@ -1814,10 +1861,13 @@ export default function StayScanDashboard() {
                 className="container mx-auto px-4 py-8"
               >
                 <div className="mb-8 flex justify-between items-center">
-                  <h2 className="text-3xl font-semibold text-gray-800 flex items-center">
-                    <Building2 className="mr-3 h-8 w-8 text-emerald-600" />
-                    Your Properties
-                  </h2>
+                  <div>
+                    <h2 className="text-3xl font-semibold text-gray-800 flex items-center">
+                      <Building2 className="mr-3 h-8 w-8 text-emerald-600" />
+                      Your Properties
+                    </h2>
+                    <div className="mt-3 text-xl"><span className="text-black text-bold">{properties.length}/{subscription?.propertyLimit}</span></div>
+                  </div>
                   <Dialog
                     open={isAddPropertyDialogOpen}
                     onOpenChange={setIsAddPropertyDialogOpen}
@@ -1852,7 +1902,7 @@ export default function StayScanDashboard() {
                             onClick={() =>
                               setAddPropertyStep(addPropertyStep - 1)
                             }
-                            className="border-emerald-600 text-emerald-600 hover:bg-emerald-50"
+                            className="border-emerald-600 text-emerald-600 hover:bg-emerald-500"
                           >
                             Back
                           </Button>
@@ -1871,18 +1921,19 @@ export default function StayScanDashboard() {
                             Continue
                           </Button>
                         ) : (
-                          <Button
-                            onClick={addProperty}
-                            disabled={
-                              uploadingImage ||
-                              !newProperty.name ||
-                              !newProperty.location ||
-                              !newProperty.description
-                            }
-                            className="bg-emerald-600 hover:bg-emerald-700 text-white"
-                          >
-                            {uploadingImage ? "Uploading..." : "Add Property"}
-                          </Button>
+                          // <Button
+                          //   onClick={addProperty}
+                          //   disabled={
+                          //     uploadingImage ||
+                          //     !newProperty.name ||
+                          //     !newProperty.location ||
+                          //     !newProperty.description
+                          //   }
+                          //   className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                          // >
+                          //   {uploadingImage ? "Uploading..." : "Add Property"}
+                          // </Button>
+                          ""
                         )}
                       </DialogFooter>
                     </DialogContent>
@@ -2140,18 +2191,18 @@ export default function StayScanDashboard() {
                     </div>
 
                     {/* Preferences */}
-                    <div className="space-y-2">
+                    {/* <div className="space-y-2">
                       <h3 className="text-lg font-semibold text-emerald-700">
                         Preferences
                       </h3>
-                      {/* <div className="flex items-center justify-between">
+                      <div className="flex items-center justify-between">
                         <Label htmlFor="darkMode" className="text-emerald-600">Dark Mode</Label>
                         <Switch
                           id="darkMode"
                           checked={isDarkMode}
                           onCheckedChange={setIsDarkMode}
                         />
-                      </div> */}
+                      </div>
                       <div className="flex items-center justify-between">
                         <Label htmlFor="language" className="text-emerald-600">
                           Language
@@ -2167,7 +2218,7 @@ export default function StayScanDashboard() {
                           </SelectContent>
                         </Select>
                       </div>
-                    </div>
+                    </div> */}
                   </CardContent>
                 </Card>
               </motion.div>
@@ -2233,7 +2284,11 @@ export default function StayScanDashboard() {
                       {/* {currentSubscription
                         ? "Switch to this plan"
                         : "Select this plan"} */}
-                        {isBtnLoading[plan.name] ? <BtnSpinner height="15px" width="15px" /> : 'Switch to this plan'}
+                      {isBtnLoading[plan.name] ? (
+                        <BtnSpinner height="15px" width="15px" />
+                      ) : (
+                        "Switch to this plan"
+                      )}
                     </Button>
                   )}
                 </CardFooter>
@@ -2418,17 +2473,35 @@ export default function StayScanDashboard() {
                     >
                       WiFi Information
                     </Label>
-                    <Textarea
-                      id="edit-wifi"
-                      value={selectedProperty.wifi}
+                    <Input
+                      id="edit-wifi-name"
+                      value={selectedProperty.wifi.name}
                       onChange={(e) =>
                         setSelectedProperty({
                           ...selectedProperty,
-                          wifi: e.target.value,
+                          ["wifi"]: {
+                            ...selectedProperty.wifi,
+                            [selectedProperty.wifi.name]: e.target.value,
+                          },
                         })
                       }
-                      className="w-full"
-                      placeholder="e.g. Network Name: MyWiFi, Password: 12345"
+                      className="w-full mb-2"
+                      placeholder="Network name"
+                    />
+                    <Input
+                      id="edit-wifi-password"
+                      value={selectedProperty.wifi.password}
+                      onChange={(e) =>
+                        setSelectedProperty({
+                          ...selectedProperty,
+                          ["wifi"]: {
+                            ...selectedProperty.wifi,
+                            [selectedProperty.wifi.password]: e.target.value,
+                          },
+                        })
+                      }
+                      className="w-full mb-2"
+                      placeholder="Password"
                     />
                   </div>
                   <div className="space-y-2">
@@ -2527,6 +2600,57 @@ export default function StayScanDashboard() {
               className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
             >
               Save Changes
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Guide review dialog */}
+      <Dialog open={openFinalReview} onOpenChange={setOpenFinalReview}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Reivew AI Guides</DialogTitle>
+          </DialogHeader>
+
+          <div>
+            <h3 className="text-md mb-3">Welcome message / descriptions</h3>
+            <div className="mb-4 p-3 border-2 border-solid rounded">
+              <p className="text-sm">{newProperty.description}</p>
+            </div>
+
+            <div>
+              <h3 className="text-md mb-3">Digital guides</h3>
+              <Textarea
+                id="digitalGuide"
+                name="digitalGuide"
+                value={newProperty.digitalGuide}
+                onChange={(e) => {
+                  const words = e.target.value.trim().split(/\s+/);
+                  if (words.length <= 200) {
+                    setNewProperty({
+                      ...newProperty,
+                      digitalGuide: e.target.value,
+                    });
+                  }
+                }}
+                className="flex-grow h-32 border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
+                placeholder="Generate or enter a digital guide for your property (max 200 words)"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              onClick={addProperty}
+              disabled={
+                uploadingImage ||
+                !newProperty.name ||
+                !newProperty.location ||
+                !newProperty.description
+              }
+              className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            >
+              {uploadingImage ? "Uploading..." : "Add Property"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -63,7 +63,7 @@ const getUserByClerkId = async (clerkId: string): Promise<PrismaUser> => {
 const processStringField = (field: unknown, fieldName: string, required: boolean = false): string | null => {
   if (typeof field === 'string') {
     return field
-  } else if (Array.isArray(field)) {
+  }else if (Array.isArray(field)) {
     const processed = field.filter(item => typeof item === 'string').join(', ')
     return processed || (required ? '' : null)
   } else if (field === null || field === undefined) {
@@ -130,7 +130,14 @@ export const POST = checkAuth(async (userId: string, request: NextRequest) => {
       }
     }
 
-    const user = await getUserByClerkId(userId)
+    const wifiObj: {name: string; password: string} = wifi;
+    const isWifi = wifiObj.name && wifiObj.password ? wifiObj :  null;
+
+    if(!isWifi){
+      throw new Error('Invalid wifi format');
+    }
+
+    const user = await getUserByClerkId(userId);
 
     const newProperty = await retryOperation(() =>
       prisma.property.create({
@@ -143,7 +150,7 @@ export const POST = checkAuth(async (userId: string, request: NextRequest) => {
           amenities: processStringField(amenities, 'amenities'),
           images: processArrayField(images, 'images'),
           localFood: processStringField(localFood, 'localFood'),
-          wifi: processStringField(wifi, 'wifi'),
+          wifi: wifiObj,
           applianceGuides: processStringField(applianceGuides, 'applianceGuides'),
           houseRules: processStringField(houseRules, 'houseRules'),
           checkOutDay: processStringField(checkOutDay, 'checkOutDay'),

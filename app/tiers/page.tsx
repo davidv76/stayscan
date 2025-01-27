@@ -108,9 +108,6 @@ export default function TiersPage() {
     }
   };
 
-  console.log(isLoading)
-
-
   return (
     <div className="relative flex size-full min-h-screen flex-col bg-[#FFFFFF] group/design-root overflow-x-hidden">
       <div className="layout-container flex h-full grow flex-col">

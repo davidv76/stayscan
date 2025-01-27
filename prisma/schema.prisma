@@ -30,7 +30,7 @@ model Property {
   amenities         String?
   images            String[]
   localFood         String?
-  wifi              String?
+  wifi              Json?
   applianceGuides   String?
   houseRules        String?
   rubbishAndBins    String?

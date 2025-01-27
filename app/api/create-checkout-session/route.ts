@@ -16,9 +16,6 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json()
     const { priceId, propertyLimit} = body;
-    console.log('Limit:💥',propertyLimit);
-    console.log('webhook key: ',process.env.STRIPE_WEBHOOK_SECRET);
-
    
     if (!priceId) {
       return NextResponse.json({ error: 'Price ID is required' }, { status: 400 })
@@ -59,8 +56,6 @@ export async function POST(request: NextRequest) {
     };
 
 
-    console.log('ID found!🍻',customer);
-
     const session = await stripe.checkout.sessions.create({
       customer: customer.id,
       mode: 'subscription',
@@ -80,8 +75,6 @@ export async function POST(request: NextRequest) {
         userId: user.id
       },
     });
-
-    console.log('session: ',session);
 
     return NextResponse.json({ sessionId: session.id, url: session.url })
   } catch (error) {
