@@ -131,6 +131,14 @@ export async function PUT(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
+    const wifiObj: {name: string; password: string} = body.wifi;
+    const isWifi = wifiObj.name && wifiObj.password ? wifiObj :  null;
+
+    if(!isWifi){
+      throw new Error('Invalid wifi format');
+    }
+
+
     const updatedProperty = await retryOperation(() =>
       prisma.property.update({
         where: { id: propertyId },
@@ -143,7 +151,7 @@ export async function PUT(
           amenities: processStringField(body.amenities, 'amenities'),
           images: processArrayField(body.images, 'images'),
           houseRules: processStringField(body.houseRules, 'houseRules'),
-          wifi: processStringField(body.wifi, 'wifi'),
+          wifi:wifiObj,
           localFood: processStringField(body.localFood, 'localFood'),
           applianceGuides: processStringField(body.applianceGuides, 'applianceGuides'),
           checkOutDay: processStringField(body.checkOutDay, 'checkOutDay'),

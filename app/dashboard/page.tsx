@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { put } from "@vercel/blob";
 import { useRouter, useSearchParams } from "next/navigation";
+
+import { toPng } from "html-to-image";
+import { saveAs } from "file-saver";
 import { useUser, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import {
@@ -97,7 +100,9 @@ import {
 import { loadStripe } from "@stripe/stripe-js";
 import QRCode from "qrcode";
 import BtnSpinner from "@/components/ui/btnSpinner";
-import AddressSuggestions from "@/components/ui/addressSuggestions";
+import AddressSuggestions from "@/components/addressSuggestions";
+import QRScannerGuide from "@/components/QRScannerGuide";
+import Image from "next/image";
 
 // Define color scheme
 const colors = {
@@ -141,6 +146,7 @@ interface Property {
   description: string;
   amenities: string;
   images: string;
+  image: File | null;
   status: "active" | "inactive";
   qrScans: number;
   emergencyContact: string;
@@ -200,7 +206,7 @@ export default function StayScanDashboard() {
     location: "",
     description: "",
     amenities: "",
-    images: "",
+    images: '',
     status: "inactive",
     qrScans: 0,
     image: null,
@@ -269,6 +275,10 @@ export default function StayScanDashboard() {
   const MotionCard = motion(Card);
 
   const [openFinalReview, setOpenFinalReview] = useState(false);
+
+  const qrCodeComponentRef = useRef<HTMLDivElement>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const sortIssues = useCallback(
     (issues: MaintenanceIssue[]) => {
@@ -623,6 +633,8 @@ export default function StayScanDashboard() {
                     accept="image/*"
                     onChange={(e) => {
                       const file = e.target.files?.[0] || null;
+
+                      console.log('chosen file: ', file)
                       setNewProperty({ ...newProperty, image: file });
                     }}
                     className="w-full text-xs border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
@@ -1130,10 +1142,33 @@ export default function StayScanDashboard() {
   const updateProperty = async (updatedProperty: Property) => {
 
     try {
+
+
+
+      let imageUrl = "";
+
+      if (updatedProperty.image) {
+        const imageBlob = await put(
+          updatedProperty.image.name,
+          updatedProperty.image,
+          {
+            access: "public",
+            token: process.env.NEXT_PUBLIC_BLOB_READ_WRITE_TOKEN,
+          }
+        );
+        imageUrl = imageBlob.url;
+      }
+
+      const propertyData = {
+        ...updatedProperty,
+        images: imageUrl,
+      };
+
+
       const response = await fetch(`/api/properties/${updatedProperty.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedProperty),
+        body: JSON.stringify(propertyData),
       });
 
       if (!response.ok) {
@@ -1351,6 +1386,10 @@ export default function StayScanDashboard() {
       }
     }, [property]);
 
+
+    console.log('seletectedProperty: ', selectedProperty);
+    console.log('newProperty: ', newProperty);
+
     //   <div class="container">
     //   <h1>${property.name}</h1>
     //   <img src="${qrCodeData}" alt="QR Code for ${property.name}" />
@@ -1479,42 +1518,26 @@ export default function StayScanDashboard() {
       }
     };
 
-    const handleDownload = () => {
-      if (!property || !qrCodeData) return;
-
-      const link = document.createElement("a");
-      link.href = qrCodeData;
-      link.download = `${property.name
-        .replace(/\s+/g, "-")
-        .toLowerCase()}-qr-code.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+    const handleDownload = async () => {
+      if (qrCodeComponentRef.current) {  
+        try {
+          const image = await toPng(qrCodeComponentRef.current);
+          saveAs(image, "QR-code-image.png"); // Save as PNG
+        } catch (error) {
+          console.error("Failed to download image:", error);
+        }
+      }
     };
 
     if (!property) return null;
 
+
     return (
       <Dialog open={showQRCode} onOpenChange={setShowQRCode}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-emerald-700">
-              QR Code for {property.name}
-            </DialogTitle>
-            <DialogDescription className="text-emerald-600">
-              Scan this QR code to access the property page.
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="bg-white sm:max-w-[425px]">
           <div className="flex flex-col items-center space-y-6">
-            <div className="w-64 h-64 bg-emerald-50 flex items-center justify-center rounded-lg border-2 border-emerald-200 shadow-lg">
-              {qrCodeData && (
-                <img
-                  src={qrCodeData}
-                  alt={`QR Code for ${property.name}`}
-                  className="w-full h-full"
-                />
-              )}
-            </div>
+
+            <QRScannerGuide qrcode={qrCodeData} propertyName={property.name} ref={qrCodeComponentRef} />
             <div className="flex space-x-4">
               <Button
                 onClick={handlePrint}
@@ -2190,35 +2213,6 @@ export default function StayScanDashboard() {
                       </Button>
                     </div>
 
-                    {/* Preferences */}
-                    {/* <div className="space-y-2">
-                      <h3 className="text-lg font-semibold text-emerald-700">
-                        Preferences
-                      </h3>
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="darkMode" className="text-emerald-600">Dark Mode</Label>
-                        <Switch
-                          id="darkMode"
-                          checked={isDarkMode}
-                          onCheckedChange={setIsDarkMode}
-                        />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <Label htmlFor="language" className="text-emerald-600">
-                          Language
-                        </Label>
-                        <Select value={language} onValueChange={setLanguage}>
-                          <SelectTrigger className="w-[180px]">
-                            <SelectValue placeholder="Select a language" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="en">English</SelectItem>
-                            <SelectItem value="es">Español</SelectItem>
-                            <SelectItem value="fr">Français</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div> */}
                   </CardContent>
                 </Card>
               </motion.div>
@@ -2333,6 +2327,27 @@ export default function StayScanDashboard() {
               </TabsList>
               <TabsContent value="general">
                 <div className="grid gap-4 py-4">
+                  <div>
+                    <div className="mb-2">
+                      <Image width={300} height={200} className="rounded object-cover " src={selectedProperty.image ? URL.createObjectURL(selectedProperty.image) : selectedProperty?.images[0]} alt="property-image" />
+                    </div>
+
+                    <Input className="hidden" 
+                     id="image"
+                     type="file"
+                     accept="image/*"
+                     ref={fileInputRef}
+                     onChange={(e) => {
+                       const file = e.target.files?.[0] || null;
+                       setSelectedProperty({ ...selectedProperty, image: file });
+                     }}
+                    />
+                    <Button onClick={()=> {
+                      if (fileInputRef.current) {
+                        fileInputRef.current.click();
+                      }
+                    }} className="w-[93px] text-[14px] bg-emerald-600 hover:bg-emerald-700 text-white">Edit photo</Button>
+                  </div>
                   <div className="space-y-2">
                     <Label
                       htmlFor="edit-name"

@@ -3,7 +3,7 @@ import { useLoadScript, Autocomplete } from "@react-google-maps/api";
 
 import { Input } from "./ui/input";
 
-const apikey = process.env.GOOGLE_MAP_API_KEY!; // Ensure default fallback for string
+const apikey = process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY!; // Ensure default fallback for string
 const libraries: "places"[] = ["places"]; // Explicit typing for libraries array
 
 interface AddressComponents {
