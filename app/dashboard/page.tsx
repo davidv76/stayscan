@@ -785,6 +785,8 @@ export default function StayScanDashboard() {
         throw new Error(data.error);
       }
 
+    
+
       setNewProperty((prev) => ({
         ...prev,
         applianceGuides: data.applianceGuides,
@@ -929,7 +931,17 @@ export default function StayScanDashboard() {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const propertiesData: Property[] = await response.json();
-      setProperties(propertiesData);
+
+      
+      const propertyList = propertiesData.map((property) => ({
+        ...property,
+        checkOutDay: typeof property.checkOutDay === "string"
+          ? JSON.parse(property.checkOutDay)
+          : property.checkOutDay, // Conditionally parse if it's a string
+      }));
+
+      console.log('propertydata: ', propertyList);
+      setProperties(propertyList);
     } catch (error) {
       console.error("Error fetching properties:", error);
       toast({
@@ -1080,6 +1092,8 @@ export default function StayScanDashboard() {
         }
 
         const addedProperty = await response.json();
+
+        addedProperty.checkOutDay = JSON.parse(addedProperty.checkOutDay);
   
         setProperties((prevProperties) => [...prevProperties, addedProperty]);
         setNewProperty({
@@ -1193,6 +1207,8 @@ export default function StayScanDashboard() {
       }
 
       const updatedPropertyData = await response.json();
+
+      updatedPropertyData.checkOutDay = JSON.parse(updatedPropertyData.checkOutDay);
   
       setProperties((prevProperties) =>
         prevProperties.map((prop) =>

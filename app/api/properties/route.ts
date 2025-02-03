@@ -161,8 +161,8 @@ export const POST = checkAuth(async (userId: string, request: NextRequest) => {
           applianceGuides: processStringField(applianceGuides, 'applianceGuides'),
           houseRules: processStringField(houseRules, 'houseRules'),
           checkOutDay: JSON.stringify({
-            checkOutTime: body.checkOutTime,
-            instructions: body.instructions,
+            checkOutTime: checkoutObj.checkOutTime,
+            instructions: checkoutObj.instructions,
           }),
           emergencyContact: processStringField(emergencyContact, 'emergencyContact'),
           nearbyPlaces: processStringField(nearbyPlaces, 'nearbyPlaces'),
