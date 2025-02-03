@@ -36,7 +36,10 @@ interface Property {
     qrScans: number;
     emergencyContact: string;
     nearbyPlaces: string;
-    checkOutDay: string;
+    checkOutDay: {
+      checkOutTime: string;
+      instructions: string;
+    };
     houseRules: string;
     digitalGuide: string;
   }

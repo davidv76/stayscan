@@ -137,6 +137,12 @@ export async function PUT(
     if(!isWifi){
       throw new Error('Invalid wifi format');
     }
+    const checkoutObj: {checkOutTime: string; instructions: string} = body.checkOutDay;
+    const isCheckoutDay = checkoutObj.checkOutTime && checkoutObj.instructions ? checkoutObj :  null;
+
+    if(!isWifi || !isCheckoutDay){
+      throw new Error('Invalid format');
+    }
 
 
     const updatedProperty = await retryOperation(() =>
@@ -154,7 +160,10 @@ export async function PUT(
           wifi:wifiObj,
           localFood: processStringField(body.localFood, 'localFood'),
           applianceGuides: processStringField(body.applianceGuides, 'applianceGuides'),
-          checkOutDay: processStringField(body.checkOutDay, 'checkOutDay'),
+          checkOutDay: JSON.stringify({
+            checkOutTime: checkoutObj.checkOutTime,
+            instructions: checkoutObj.instructions,
+          }),
           emergencyContact: processStringField(body.emergencyContact, 'emergencyContact'),
           nearbyPlaces: processStringField(body.nearbyPlaces, 'nearbyPlaces'),
           digitalGuide: processStringField(body.digitalGuide, 'digitalGuide'),

@@ -132,9 +132,16 @@ export const POST = checkAuth(async (userId: string, request: NextRequest) => {
 
     const wifiObj: {name: string; password: string} = wifi;
     const isWifi = wifiObj.name && wifiObj.password ? wifiObj :  null;
+    
+    const checkoutObj: {checkOutTime: string; instructions: string} = checkOutDay;
+    const isCheckoutDay = checkoutObj.checkOutTime && checkoutObj.instructions ? checkoutObj :  null;
 
     if(!isWifi){
       throw new Error('Invalid wifi format');
+    }
+
+    if(!isCheckoutDay){
+      throw new Error('Invalid checkout format');
     }
 
     const user = await getUserByClerkId(userId);
@@ -153,7 +160,10 @@ export const POST = checkAuth(async (userId: string, request: NextRequest) => {
           wifi: wifiObj,
           applianceGuides: processStringField(applianceGuides, 'applianceGuides'),
           houseRules: processStringField(houseRules, 'houseRules'),
-          checkOutDay: processStringField(checkOutDay, 'checkOutDay'),
+          checkOutDay: JSON.stringify({
+            checkOutTime: body.checkOutTime,
+            instructions: body.instructions,
+          }),
           emergencyContact: processStringField(emergencyContact, 'emergencyContact'),
           nearbyPlaces: processStringField(nearbyPlaces, 'nearbyPlaces'),
           digitalGuide: processStringField(digitalGuide, 'digitalGuide'),

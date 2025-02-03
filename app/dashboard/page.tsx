@@ -48,7 +48,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Switch } from "@/components/ui/switch";
+
 import {
   Popover,
   PopoverContent,
@@ -151,7 +151,10 @@ interface Property {
   qrScans: number;
   emergencyContact: string;
   nearbyPlaces: string;
-  checkOutDay: string;
+  checkOutDay: {
+    checkOutTime: string;
+    instructions: string;
+  };
   houseRules: string;
   digitalGuide: string;
 }
@@ -219,7 +222,10 @@ export default function StayScanDashboard() {
     localFood: "",
     applianceGuides: "",
     nearbyPlaces: "",
-    checkOutDay: "",
+    checkOutDay: {
+      checkOutTime: "",
+      instructions: ''
+    },
     houseRules: "",
     digitalGuide: "",
   });
@@ -268,6 +274,7 @@ export default function StayScanDashboard() {
   const [selectedIssue, setSelectedIssue] = useState<MaintenanceIssue | null>(
     null
   );
+  const [isUpdating, setIsUpdating] = useState(false);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
   const [stripeBlocked, setStripeBlocked] = useState(false);
   const [isGeneratingDescription, setIsGeneratingDescription] = useState(false);
@@ -495,6 +502,10 @@ export default function StayScanDashboard() {
           {
             id: "checkOutDay",
             title: "Check-out Day",
+            inputs: [
+              {id:'checkOutTime', title: 'Checkout time', placeholder: 'Checkout time: e.g. Sunday at 11:00 am'},
+              {id:'instructions', title: 'Instructions', placeholder: 'Instructions: i.e. where to leave key, cleaning rules etc'},
+            ],
             placeholder: "e.g. Sunday at 11:00 AM",
             icon: <CalendarCheck className="h-4 w-4" />,
           },
@@ -581,7 +592,7 @@ export default function StayScanDashboard() {
                             setNewProperty({
                               ...newProperty,
                               [card.id]: {
-                                ...newProperty.wifi,
+                                ...newProperty[card.id === 'wifi' ? "wifi" : 'checkOutDay'],
                                 [item.id]: e.target.value,
                               },
                             })
@@ -589,10 +600,11 @@ export default function StayScanDashboard() {
                           id={item.id}
                           className="w-full mb-2 text-xs border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
                           value={
-                            newProperty.wifi[
+                            item.id === 'wifi' ? newProperty.wifi[
                               item.id as keyof typeof newProperty.wifi
                             ] as string
-                          }
+                          : newProperty.checkOutDay[item.id as keyof typeof newProperty.checkOutDay] as string
+                        }
                           key={item.id}
                           placeholder={item.placeholder}
                         />
@@ -780,7 +792,7 @@ export default function StayScanDashboard() {
         nearbyPlaces: data.nearbyPlaces,
         amenities: data.amenities,
         localFood: data.localFood?.map((item: {restaurantName: string; distance: string; websiteUrl: string})=> (`${item.restaurantName} - ${item.distance} away \n ${item.websiteUrl}`)),
-        checkOutDay: data.checkOutDay,
+        checkOutDay: {...data.checkOutDay},
         rubbishAndBins: data.rubbishAndBins,
       }));
       toast({
@@ -1085,7 +1097,10 @@ export default function StayScanDashboard() {
           image: null,
           emergencyContact: "",
           nearbyPlaces: "",
-          checkOutDay: "",
+          checkOutDay: {
+            checkOutTime: '',
+            instructions: ""
+          },
           houseRules: "",
           digitalGuide: "",
         });
@@ -1142,10 +1157,9 @@ export default function StayScanDashboard() {
   const updateProperty = async (updatedProperty: Property) => {
 
     try {
+      setIsUpdating(true);
 
-
-
-      let imageUrl = "";
+      let propertyData = updatedProperty;
 
       if (updatedProperty.image) {
         const imageBlob = await put(
@@ -1156,15 +1170,13 @@ export default function StayScanDashboard() {
             token: process.env.NEXT_PUBLIC_BLOB_READ_WRITE_TOKEN,
           }
         );
-        imageUrl = imageBlob.url;
-      }
-
-      const propertyData = {
+        propertyData = {
         ...updatedProperty,
-        images: imageUrl,
+        images: imageBlob.url
       };
+    }
 
-
+  
       const response = await fetch(`/api/properties/${updatedProperty.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -1192,6 +1204,8 @@ export default function StayScanDashboard() {
         description: "Property updated successfully!",
         variant: "default",
       });
+
+      console.log('modal off')
       setIsEditDialogOpen(false);
     } catch (error) {
       console.error("Error updating property:", error);
@@ -1202,6 +1216,8 @@ export default function StayScanDashboard() {
         }`,
         variant: "destructive",
       });
+    } finally{
+      setIsUpdating(false);
     }
   };
 
@@ -1522,7 +1538,7 @@ export default function StayScanDashboard() {
       if (qrCodeComponentRef.current) {  
         try {
           const image = await toPng(qrCodeComponentRef.current);
-          saveAs(image, "QR-code-image.png"); // Save as PNG
+          saveAs(image, "propert-qr-code.png"); // Save as PNG
         } catch (error) {
           console.error("Failed to download image:", error);
         }
@@ -1991,7 +2007,7 @@ export default function StayScanDashboard() {
                             </div>
                           </div>
                           <CardContent className="p-4">
-                            <div className="flex justify-between items-center mb-3">
+                            {/* <div className="flex justify-between items-center mb-3">
                               <Badge
                                 variant={
                                   property.status === "active"
@@ -2005,7 +2021,7 @@ export default function StayScanDashboard() {
                               <span className="text-sm text-gray-500">
                                 {property.qrScans} scans
                               </span>
-                            </div>
+                            </div> */}
                             <p className="text-sm text-gray-600 mb-3 line-clamp-2">
                               {property.description}
                             </p>
@@ -2496,7 +2512,7 @@ export default function StayScanDashboard() {
                           ...selectedProperty,
                           ["wifi"]: {
                             ...selectedProperty.wifi,
-                            [selectedProperty.wifi.name]: e.target.value,
+                            ['name']: e.target.value,
                           },
                         })
                       }
@@ -2511,7 +2527,7 @@ export default function StayScanDashboard() {
                           ...selectedProperty,
                           ["wifi"]: {
                             ...selectedProperty.wifi,
-                            [selectedProperty.wifi.password]: e.target.value,
+                            ['password']: e.target.value,
                           },
                         })
                       }
@@ -2588,12 +2604,28 @@ export default function StayScanDashboard() {
                       Check-out Day
                     </Label>
                     <Input
-                      id="edit-checkout"
-                      value={selectedProperty.checkOutDay}
+                      id="edit-checkout-checkOutTime"
+                      value={selectedProperty.checkOutDay.checkOutTime}
                       onChange={(e) =>
                         setSelectedProperty({
                           ...selectedProperty,
-                          checkOutDay: e.target.value,
+                          ["checkOutDay"]: {
+                            ...selectedProperty.checkOutDay,
+                            ['checkOutTime']: e.target.value},
+                        })
+                      }
+                      className="w-full"
+                      placeholder="e.g. Sunday at 11:00 AM"
+                    />
+                    <Input
+                      id="edit-checkout-instructions"
+                      value={selectedProperty.checkOutDay.instructions}
+                      onChange={(e) =>
+                        setSelectedProperty({
+                          ...selectedProperty,
+                          ["checkOutDay"]: {
+                            ...selectedProperty.checkOutDay,
+                            ['instructions']: e.target.value},
                         })
                       }
                       className="w-full"
@@ -2606,15 +2638,16 @@ export default function StayScanDashboard() {
           )}
           <DialogFooter>
             <Button
+            disabled={isUpdating}
               onClick={() => {
                 if (selectedProperty) {
                   updateProperty(selectedProperty);
-                  setIsEditDialogOpen(false);
+                  // setIsEditDialogOpen(false);
                 }
               }}
               className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
             >
-              Save Changes
+              {isUpdating ? 'Saving...' : "Save Changes"}
             </Button>
           </DialogFooter>
         </DialogContent>

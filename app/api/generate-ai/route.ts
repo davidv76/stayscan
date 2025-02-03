@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
       - WiFiInformation (An object with networkName and password as strings)
       - localFood (Array of objects of 3-5 restaurants, each with restaurantName, distance in km, and websiteUrl)
       - applianceGuides (Array of 2-3 strings explaining appliance usage)
-      - checkOutDay (A single string)
+      - checkOutDay (An object with two property of string (e.g: checkOutTime, instructions))
       - rubbishAndBins (Array of 2-3 strings about trash collection and recycling instructions)
 
       2. Ensure the structure is always the same, with no missing or additional keys.

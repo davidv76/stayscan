@@ -76,3 +76,12 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+
+.hero-section{
+  background-image: url('./../assets/images/stayscan-watermark.png');
+
+  background-position: center;
+  background-size: inherit;
+  background-repeat: no-repeat;
+}

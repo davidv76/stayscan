@@ -23,7 +23,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
+import { processText } from '@/lib/utils';
+import logo from '../../../assets/images/stayscan-logo.jpg';
+
 
 interface Property {
   id: string;
@@ -51,7 +54,7 @@ interface MaintenanceIssue {
   status: 'Open' | 'In Progress' | 'Resolved';
 }
 
-type CategoryContent = string | { name: string; instructions: string; fileUrl: string }[] | { name: string; description: string; distance: string }[] | {name: string; password: string};
+type CategoryContent = string | { name: string; instructions: string; fileUrl: string }[] | { name: string; description: string; distance: string }[] | {name: string; password: string} | {checkOutTime: string; instructions: string} | string[];
 
 interface Category {
   name: string;
@@ -96,38 +99,38 @@ export default function PropertyInfoPage() {
     }
 
     fetchProperty()
-    fetchMaintenanceIssues()
+    // fetchMaintenanceIssues()
   }, [id])
 
 
-  const reportMaintenanceIssue = async () => {
-    if (maintenanceIssue.title.trim() && maintenanceIssue.issue.trim()) {
-      try {
-        const response = await fetch('/api/maintenance-issues', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            propertyId: id,
-            title: maintenanceIssue.title,
-            issue: maintenanceIssue.issue,
-            status: 'Open',
-          }),
-        })
+  // const reportMaintenanceIssue = async () => {
+  //   if (maintenanceIssue.title.trim() && maintenanceIssue.issue.trim()) {
+  //     try {
+  //       const response = await fetch('/api/maintenance-issues', {
+  //         method: 'POST',
+  //         headers: { 'Content-Type': 'application/json' },
+  //         body: JSON.stringify({
+  //           propertyId: id,
+  //           title: maintenanceIssue.title,
+  //           issue: maintenanceIssue.issue,
+  //           status: 'Open',
+  //         }),
+  //       })
 
-        if (!response.ok) throw new Error('Failed to report maintenance issue')
+  //       if (!response.ok) throw new Error('Failed to report maintenance issue')
 
-        const newIssue: MaintenanceIssue = await response.json()
-        setMaintenanceIssues([...maintenanceIssues, newIssue])
-        setMaintenanceIssue({ title: "", issue: "" })
-        toast({ title: "Success", description: "Maintenance issue reported successfully." })
-      } catch (error) {
-        console.error('Error reporting maintenance issue:', error)
-        toast({ title: "Error", description: "Failed to report maintenance issue. Please try again.", variant: "destructive" })
-      }
-    } else {
-      toast({ title: "Error", description: "Please provide both a title and description for the issue.", variant: "destructive" })
-    }
-  }
+  //       const newIssue: MaintenanceIssue = await response.json()
+  //       setMaintenanceIssues([...maintenanceIssues, newIssue])
+  //       setMaintenanceIssue({ title: "", issue: "" })
+  //       toast({ title: "Success", description: "Maintenance issue reported successfully." })
+  //     } catch (error) {
+  //       console.error('Error reporting maintenance issue:', error)
+  //       toast({ title: "Error", description: "Failed to report maintenance issue. Please try again.", variant: "destructive" })
+  //     }
+  //   } else {
+  //     toast({ title: "Error", description: "Please provide both a title and description for the issue.", variant: "destructive" })
+  //   }
+  // }
 
   if (loading) {
     return <div className="flex justify-center items-center h-screen">Loading...</div>
@@ -148,23 +151,8 @@ export default function PropertyInfoPage() {
     { name: 'Check Out', icon: CalendarCheck, content: property.checkOutDay },
   ]
   const renderCategoryContent = (category: Category) => {
-    if (category.name === 'Local Attractions' && Array.isArray(category.content)) {
-      return (
-        <div className="space-y-4">
-          {(category.content as { name: string; description: string; distance: string }[]).map((attraction, index) => (
-            <Card key={index} className="overflow-hidden">
-              <CardHeader className="bg-gray-50 pb-2">
-                <CardTitle className="text-lg font-semibold">{attraction.name}</CardTitle>
-                <CardDescription className="text-sm text-gray-500">{attraction.distance}</CardDescription>
-              </CardHeader>
-              <CardContent className="pt-4">
-                <p className="text-sm text-gray-700">{attraction.description}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )
-    }  else if (category.name === 'Emergency Contacts') {
+    if (category.name === 'Emergency Contacts') {
+      console.log('emergency executed')
       return (
         <Card className="overflow-hidden">
           <CardContent className="pt-4">
@@ -182,6 +170,22 @@ export default function PropertyInfoPage() {
           </CardContent>
         </Card>
       )
+    }else if(category.name === 'Local Food'){
+      const contentString = category.content as string;
+    
+      // Now you can safely call split
+      const localFoods = contentString.split(',').map((item: string, index: number) => item.split('\n'));
+
+      return <Card>
+          <CardContent>
+          {localFoods.map((item: string[], index: number)=> (
+            <div key={index} className='bg-gray-100 text-gray-800 rounded p-3 text-sm hover:bg-gray-200 transition-colors duration-200 cursor-pointer mb-3'>
+              <p>{item[0]}</p>
+              <Link target='_blank' className='underline text-blue-500' href={item[1]}>{item[1].replace('https://', '')}</Link>
+            </div>
+          ))}
+          </CardContent>
+      </Card>
     } else if(category.name === "Wifi"){
 
       const wifiDetails = category.content as {name: string; password: string}
@@ -192,6 +196,20 @@ export default function PropertyInfoPage() {
               <div className='px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors duration-200 cursor-pointer gap-1'>
                 <p className='px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors duration-200'>Network name: {wifiDetails.name}</p>
                 <p className='px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors duration-200'>Password: {wifiDetails.password}</p>
+            </div>
+          </CardContent>
+        </Card>
+      )
+    }else if(category.name === 'Check Out'){
+      const checkoutDetails = category.content as {checkOutTime: string; instructions: string};
+
+
+      return (
+        <Card>
+          <CardContent>
+          <div className='px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors duration-200 cursor-pointer gap-1'>
+                <p className='px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors duration-200'>Checkout time: {checkoutDetails.checkOutTime}</p>
+                <p className='px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors duration-200'>Instructions: {checkoutDetails.instructions}</p>
             </div>
           </CardContent>
         </Card>
@@ -225,6 +243,9 @@ export default function PropertyInfoPage() {
       )
     }
   }
+
+
+  const processedText = processText(property?.digitalGuide?.replace(/[*#]/g, ''));
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -317,19 +338,25 @@ export default function PropertyInfoPage() {
             <CardTitle className="text-xl md:text-2xl">Digital Guide</CardTitle>
           </CardHeader>
           <CardContent className="p-4 md:p-6">
-            <p className="text-sm md:text-base text-muted-foreground whitespace-pre-wrap">{property?.digitalGuide?.replace(/[*#]/g, '')}</p>
+            <p className="text-sm md:text-base text-muted-foreground whitespace-pre-wrap" 
+              dangerouslySetInnerHTML={{ __html: processedText }}
+            />
           </CardContent>
         </Card>
       </div>
       <footer className="bg-muted py-4 mt-12">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} JJ Media. All rights reserved.
-            <a href="https://jonasjohansen.framer.media/" className="text-foreground hover:underline ml-1" 
-              target="_blank" rel="noopener noreferrer">
-              jonasjohansen.framer.media
-            </a>
-          </p>
+          <div className="text-sm text-muted-foreground gap-3 flex items-center justify-center">
+            <span>&copy; {new Date().getFullYear()} Proudly night to you by</span>
+
+            <div className='flex items-center gap-1'>
+            <img className='rounded-full w-[20px] h-[20px]' src={logo.src} alt="Logo" />
+              <a href="https://stayscan.tech" className="text-foreground hover:underline ml-1"
+                target="_blank" rel="noopener noreferrer">
+                StayScan.tech
+              </a>
+            </div>
+          </div>
         </div>
       </footer>
     </div>

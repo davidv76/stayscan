@@ -34,7 +34,7 @@ model Property {
   applianceGuides   String?
   houseRules        String?
   rubbishAndBins    String?
-  checkOutDay       String?
+  checkOutDay       Json?
   emergencyContact  String?
   nearbyPlaces      String?
   qrScans           Int                @default(0)

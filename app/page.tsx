@@ -86,8 +86,9 @@ export default function Component() {
         </div>
       )}
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-gray-50">
-          <div className="container mx-auto px-4 md:px-6 w-full max-w-7xl">
+        {/* <section className="min-h-screen bg-gradient-to-b from-teal-50 to-white flex items-center justify-center p-6 hero-section"> */}
+        <section className="py-48 w-full text-center space-y-8 flex items-center justify-center p-8 rounded-2xl shadow-lg hero-section">
+          {/* <div className="container mx-auto px-4 md:px-6 w-full max-w-7xl">
             <div className="flex flex-col items-center space-y-4 text-center">
               <div className="space-y-2">
                 <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none text-gray-900">
@@ -100,7 +101,47 @@ export default function Component() {
                 <Button variant="outline" className="text-white">Watch Demo</Button>
               </div>
             </div>
-          </div>
+          </div> */}
+
+
+    <div className="max-w-3xl w-full text-center space-y-8">
+        <div className="space-y-4">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight">
+            AI-Powered Property Management{' '}
+            <span className="block text-teal-500">
+              That Works While You Sleep
+            </span>
+          </h1>
+          
+          <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
+            Turn hours of work into minutes with smart automation, AI-generated
+            guest guides, and unified property management.
+          </p>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <button className="bg-teal-500 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-teal-600 transition-colors duration-200 flex items-center gap-2">
+            Start Free Trial
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
+          
+          <button className="px-8 py-3 rounded-lg text-lg font-semibold text-teal-500 border-2 border-teal-500 hover:bg-teal-50 transition-colors duration-200">
+            Watch Demo
+          </button>
+        </div>
+      </div>
         </section>
         <section id="features" className="w-full py-12 md:py-24 lg:py-32">
           <div className="container mx-auto px-4 md:px-6 w-full max-w-7xl">
