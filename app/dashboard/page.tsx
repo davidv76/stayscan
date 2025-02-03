@@ -2615,7 +2615,7 @@ export default function StayScanDashboard() {
                         })
                       }
                       className="w-full"
-                      placeholder="e.g. Sunday at 11:00 AM"
+                      placeholder="checkout time: e.g. Sunday at 11:00 AM"
                     />
                     <Input
                       id="edit-checkout-instructions"
@@ -2629,7 +2629,7 @@ export default function StayScanDashboard() {
                         })
                       }
                       className="w-full"
-                      placeholder="e.g. Sunday at 11:00 AM"
+                      placeholder="Instructions: Drop your keys at reception etc"
                     />
                   </div>
                 </div>
