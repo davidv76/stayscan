@@ -233,16 +233,48 @@ export default function PropertyInfoPage() {
           </CardContent>
         </Card>
       );
-    } else if (category.name === "Local Food") {
+    }else if(category.name === 'Local Attractions'){
       const contentString = category.content as string;
 
-      // Now you can safely call split
+      const attractions = contentString
+      .split("\n\n")
+      .map((item: string, index: number) => item.split("\n"))
+      .filter(subArray => subArray.length > 0 && subArray[0].trim() !== "")
+      .map(subArray =>
+        subArray.map(item => {
+            return item.trim(); // Trim whitespace for other items
+        })
+    );
+  
+    return (
+      <Card>
+        <CardContent>
+          {attractions.map((item: string[], index: number) => (
+            <div
+              key={index}
+              className="bg-gray-100 text-gray-800 rounded p-3 text-sm hover:bg-gray-200 transition-colors duration-200 cursor-pointer mb-3"
+            >
+              {item.map(str=> (<p>{str}</p>))}
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    );
+
+    } else if (category.name === "Local Food") {
+
+      const contentString = category.content as string;
+
       const localFoods = contentString
-        .split(",")
-        .map((item: string, index: number) => item.split("\n"));
-
-      console.log("foods: ", localFoods);
-
+        .split("\n\n")
+        .map((item: string, index: number) => item.split("\n"))
+        .filter(subArray => subArray.length > 0 && subArray[0].trim() !== "")
+        .map(subArray =>
+          subArray.map(item => {
+              return item.trim(); // Trim whitespace for other items
+          })
+      );
+    
       return (
         <Card>
           <CardContent>
@@ -251,18 +283,13 @@ export default function PropertyInfoPage() {
                 key={index}
                 className="bg-gray-100 text-gray-800 rounded p-3 text-sm hover:bg-gray-200 transition-colors duration-200 cursor-pointer mb-3"
               >
-                <p>{item[0]}</p>
-                <Link
+                {item.map(str=> ((str.includes('website:') && !str.includes("website: N/A")) ? <Link
                   target="_blank"
                   className="underline text-blue-500"
-                  href={`${
-                    item[1].trim().startsWith("http")
-                      ? item[1].trim()
-                      : "https://" + item[1].trim()
-                  }`}
+                  href={str.trim().replace('website:', "")}
                 >
-                  {item[1].replace("https://", "")}
-                </Link>
+                  {str.replace(/https?:\/\/([^\/]+).*/g, "$1")}
+                </Link> : <p>{str}</p>))}
               </div>
             ))}
           </CardContent>

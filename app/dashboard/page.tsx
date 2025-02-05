@@ -209,7 +209,7 @@ export default function StayScanDashboard() {
     location: "",
     description: "",
     amenities: "",
-    images: '',
+    images: "",
     status: "inactive",
     qrScans: 0,
     image: null,
@@ -224,7 +224,7 @@ export default function StayScanDashboard() {
     nearbyPlaces: "",
     checkOutDay: {
       checkOutTime: "",
-      instructions: ''
+      instructions: "",
     },
     houseRules: "",
     digitalGuide: "",
@@ -440,7 +440,10 @@ export default function StayScanDashboard() {
                 className="w-full border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
                 placeholder="e.g. 867 Champlin Mountains, Howetown, WI "
               /> */}
-              <AddressSuggestions address={newProperty} setAddress={setNewProperty} />
+              <AddressSuggestions
+                address={newProperty}
+                setAddress={setNewProperty}
+              />
             </div>
           </div>
         );
@@ -503,8 +506,17 @@ export default function StayScanDashboard() {
             id: "checkOutDay",
             title: "Check-out Day",
             inputs: [
-              {id:'checkOutTime', title: 'Checkout time', placeholder: 'Checkout time: e.g. Sunday at 11:00 am'},
-              {id:'instructions', title: 'Instructions', placeholder: 'Instructions: i.e. where to leave key, cleaning rules etc'},
+              {
+                id: "checkOutTime",
+                title: "Checkout time",
+                placeholder: "Checkout time: e.g. Sunday at 11:00 am",
+              },
+              {
+                id: "instructions",
+                title: "Instructions",
+                placeholder:
+                  "Instructions: i.e. where to leave key, cleaning rules etc",
+              },
             ],
             placeholder: "e.g. Sunday at 11:00 AM",
             icon: <CalendarCheck className="h-4 w-4" />,
@@ -592,7 +604,9 @@ export default function StayScanDashboard() {
                             setNewProperty({
                               ...newProperty,
                               [card.id]: {
-                                ...newProperty[card.id === 'wifi' ? "wifi" : 'checkOutDay'],
+                                ...newProperty[
+                                  card.id === "wifi" ? "wifi" : "checkOutDay"
+                                ],
                                 [item.id]: e.target.value,
                               },
                             })
@@ -600,11 +614,14 @@ export default function StayScanDashboard() {
                           id={item.id}
                           className="w-full mb-2 text-xs border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
                           value={
-                            item.id === 'wifi' ? newProperty.wifi[
-                              item.id as keyof typeof newProperty.wifi
-                            ] as string
-                          : newProperty.checkOutDay[item.id as keyof typeof newProperty.checkOutDay] as string
-                        }
+                            item.id === "wifi"
+                              ? (newProperty.wifi[
+                                  item.id as keyof typeof newProperty.wifi
+                                ] as string)
+                              : (newProperty.checkOutDay[
+                                  item.id as keyof typeof newProperty.checkOutDay
+                                ] as string)
+                          }
                           key={item.id}
                           placeholder={item.placeholder}
                         />
@@ -646,7 +663,7 @@ export default function StayScanDashboard() {
                     onChange={(e) => {
                       const file = e.target.files?.[0] || null;
 
-                      console.log('chosen file: ', file)
+                      console.log("chosen file: ", file);
                       setNewProperty({ ...newProperty, image: file });
                     }}
                     className="w-full text-xs border-emerald-300 focus:border-emerald-500 focus:ring-emerald-500"
@@ -776,7 +793,7 @@ export default function StayScanDashboard() {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate property details')
+        throw new Error("Failed to generate property details");
       }
 
       const data = await response.json();
@@ -785,18 +802,26 @@ export default function StayScanDashboard() {
         throw new Error(data.error);
       }
 
-    
-
       setNewProperty((prev) => ({
         ...prev,
         applianceGuides: data.applianceGuides,
         houseRules: data.houseRules,
-        nearbyPlaces: data.nearbyPlaces,
+        nearbyPlaces: data.nearbyPlaces?.map((item: {name: string; address: string})=> (`Place name: ${item.name}\n Address: ${item.address}`)).join('\n\n'),
         amenities: data.amenities,
-        localFood: data.localFood?.map((item: {restaurantName: string; distance: string; websiteUrl: string})=> (`${item.restaurantName} - ${item.distance} away \n ${item.websiteUrl}`)),
-        checkOutDay: {...data.checkOutDay},
+        localFood: data.localFood?.map(
+          (item: {
+            restaurantName: string;
+            address: string;
+            websiteUrl: string;
+            phone: string;
+            description: string;
+          }) =>
+            `name: ${item.restaurantName} - ${item.address} \n website: ${item.websiteUrl} \n Phone: ${item.phone} \n About: ${item.description}`
+        ).join('\n\n'),
+        checkOutDay: { ...data.checkOutDay },
         rubbishAndBins: data.rubbishAndBins,
       }));
+
       toast({
         title: "Success",
         description: "Property details generated successfully!",
@@ -874,7 +899,7 @@ export default function StayScanDashboard() {
 
   const generateDigitalGuide = async () => {
     setIsGeneratingGuide(true);
-    
+
     try {
       const response = await fetch("/api/generate-guide", {
         method: "POST",
@@ -932,15 +957,15 @@ export default function StayScanDashboard() {
       }
       const propertiesData: Property[] = await response.json();
 
-      
       const propertyList = propertiesData.map((property) => ({
         ...property,
-        checkOutDay: typeof property.checkOutDay === "string"
-          ? JSON.parse(property.checkOutDay)
-          : property.checkOutDay, // Conditionally parse if it's a string
+        checkOutDay:
+          typeof property.checkOutDay === "string"
+            ? JSON.parse(property.checkOutDay)
+            : property.checkOutDay, // Conditionally parse if it's a string
       }));
 
-      console.log('propertydata: ', propertyList);
+      console.log("propertydata: ", propertyList);
       setProperties(propertyList);
     } catch (error) {
       console.error("Error fetching properties:", error);
@@ -1094,7 +1119,7 @@ export default function StayScanDashboard() {
         const addedProperty = await response.json();
 
         addedProperty.checkOutDay = JSON.parse(addedProperty.checkOutDay);
-  
+
         setProperties((prevProperties) => [...prevProperties, addedProperty]);
         setNewProperty({
           name: "",
@@ -1112,8 +1137,8 @@ export default function StayScanDashboard() {
           emergencyContact: "",
           nearbyPlaces: "",
           checkOutDay: {
-            checkOutTime: '',
-            instructions: ""
+            checkOutTime: "",
+            instructions: "",
           },
           houseRules: "",
           digitalGuide: "",
@@ -1169,7 +1194,6 @@ export default function StayScanDashboard() {
   };
 
   const updateProperty = async (updatedProperty: Property) => {
-
     try {
       setIsUpdating(true);
 
@@ -1185,12 +1209,11 @@ export default function StayScanDashboard() {
           }
         );
         propertyData = {
-        ...updatedProperty,
-        images: imageBlob.url
-      };
-    }
+          ...updatedProperty,
+          images: imageBlob.url,
+        };
+      }
 
-  
       const response = await fetch(`/api/properties/${updatedProperty.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -1208,8 +1231,10 @@ export default function StayScanDashboard() {
 
       const updatedPropertyData = await response.json();
 
-      updatedPropertyData.checkOutDay = JSON.parse(updatedPropertyData.checkOutDay);
-  
+      updatedPropertyData.checkOutDay = JSON.parse(
+        updatedPropertyData.checkOutDay
+      );
+
       setProperties((prevProperties) =>
         prevProperties.map((prop) =>
           prop.id === updatedPropertyData.id ? updatedPropertyData : prop
@@ -1221,7 +1246,7 @@ export default function StayScanDashboard() {
         variant: "default",
       });
 
-      console.log('modal off')
+      console.log("modal off");
       setIsEditDialogOpen(false);
     } catch (error) {
       console.error("Error updating property:", error);
@@ -1232,7 +1257,7 @@ export default function StayScanDashboard() {
         }`,
         variant: "destructive",
       });
-    } finally{
+    } finally {
       setIsUpdating(false);
     }
   };
@@ -1318,7 +1343,6 @@ export default function StayScanDashboard() {
 
   // Subscription handling
   const handleSubscription = async (plan: SubscriptionPlan) => {
-
     try {
       setIsBtnLoading((prev) => ({ ...prev, [plan.name]: true }));
       const response = await fetch("/api/create-checkout-session", {
@@ -1418,9 +1442,8 @@ export default function StayScanDashboard() {
       }
     }, [property]);
 
-
-    console.log('seletectedProperty: ', selectedProperty);
-    console.log('newProperty: ', newProperty);
+    console.log("seletectedProperty: ", selectedProperty);
+    console.log("newProperty: ", newProperty);
 
     //   <div class="container">
     //   <h1>${property.name}</h1>
@@ -1551,7 +1574,7 @@ export default function StayScanDashboard() {
     };
 
     const handleDownload = async () => {
-      if (qrCodeComponentRef.current) {  
+      if (qrCodeComponentRef.current) {
         try {
           const image = await toPng(qrCodeComponentRef.current);
           saveAs(image, "propert-qr-code.png"); // Save as PNG
@@ -1563,13 +1586,15 @@ export default function StayScanDashboard() {
 
     if (!property) return null;
 
-
     return (
       <Dialog open={showQRCode} onOpenChange={setShowQRCode}>
         <DialogContent className="bg-white sm:max-w-[425px]">
           <div className="flex flex-col items-center space-y-6">
-
-            <QRScannerGuide qrcode={qrCodeData} propertyName={property.name} ref={qrCodeComponentRef} />
+            <QRScannerGuide
+              qrcode={qrCodeData}
+              propertyName={property.name}
+              ref={qrCodeComponentRef}
+            />
             <div className="flex space-x-4">
               <Button
                 onClick={handlePrint}
@@ -1921,7 +1946,11 @@ export default function StayScanDashboard() {
                       <Building2 className="mr-3 h-8 w-8 text-emerald-600" />
                       Your Properties
                     </h2>
-                    <div className="mt-3 text-xl"><span className="text-black text-bold">{properties.length}/{subscription?.propertyLimit}</span></div>
+                    <div className="mt-3 text-xl">
+                      <span className="text-black text-bold">
+                        {properties.length}/{subscription?.propertyLimit}
+                      </span>
+                    </div>
                   </div>
                   <Dialog
                     open={isAddPropertyDialogOpen}
@@ -2244,7 +2273,6 @@ export default function StayScanDashboard() {
                         Manage Subscription
                       </Button>
                     </div>
-
                   </CardContent>
                 </Card>
               </motion.div>
@@ -2361,24 +2389,43 @@ export default function StayScanDashboard() {
                 <div className="grid gap-4 py-4">
                   <div>
                     <div className="mb-2">
-                      <Image width={300} height={200} className="rounded object-cover " src={selectedProperty.image ? URL.createObjectURL(selectedProperty.image) : selectedProperty?.images[0]} alt="property-image" />
+                      <Image
+                        width={300}
+                        height={200}
+                        className="rounded object-cover "
+                        src={
+                          selectedProperty.image
+                            ? URL.createObjectURL(selectedProperty.image)
+                            : selectedProperty?.images[0]
+                        }
+                        alt="property-image"
+                      />
                     </div>
 
-                    <Input className="hidden" 
-                     id="image"
-                     type="file"
-                     accept="image/*"
-                     ref={fileInputRef}
-                     onChange={(e) => {
-                       const file = e.target.files?.[0] || null;
-                       setSelectedProperty({ ...selectedProperty, image: file });
-                     }}
+                    <Input
+                      className="hidden"
+                      id="image"
+                      type="file"
+                      accept="image/*"
+                      ref={fileInputRef}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0] || null;
+                        setSelectedProperty({
+                          ...selectedProperty,
+                          image: file,
+                        });
+                      }}
                     />
-                    <Button onClick={()=> {
-                      if (fileInputRef.current) {
-                        fileInputRef.current.click();
-                      }
-                    }} className="w-[93px] text-[14px] bg-emerald-600 hover:bg-emerald-700 text-white">Edit photo</Button>
+                    <Button
+                      onClick={() => {
+                        if (fileInputRef.current) {
+                          fileInputRef.current.click();
+                        }
+                      }}
+                      className="w-[93px] text-[14px] bg-emerald-600 hover:bg-emerald-700 text-white"
+                    >
+                      Edit photo
+                    </Button>
                   </div>
                   <div className="space-y-2">
                     <Label
@@ -2528,7 +2575,7 @@ export default function StayScanDashboard() {
                           ...selectedProperty,
                           ["wifi"]: {
                             ...selectedProperty.wifi,
-                            ['name']: e.target.value,
+                            ["name"]: e.target.value,
                           },
                         })
                       }
@@ -2543,7 +2590,7 @@ export default function StayScanDashboard() {
                           ...selectedProperty,
                           ["wifi"]: {
                             ...selectedProperty.wifi,
-                            ['password']: e.target.value,
+                            ["password"]: e.target.value,
                           },
                         })
                       }
@@ -2627,7 +2674,8 @@ export default function StayScanDashboard() {
                           ...selectedProperty,
                           ["checkOutDay"]: {
                             ...selectedProperty.checkOutDay,
-                            ['checkOutTime']: e.target.value},
+                            ["checkOutTime"]: e.target.value,
+                          },
                         })
                       }
                       className="w-full"
@@ -2641,7 +2689,8 @@ export default function StayScanDashboard() {
                           ...selectedProperty,
                           ["checkOutDay"]: {
                             ...selectedProperty.checkOutDay,
-                            ['instructions']: e.target.value},
+                            ["instructions"]: e.target.value,
+                          },
                         })
                       }
                       className="w-full"
@@ -2654,7 +2703,7 @@ export default function StayScanDashboard() {
           )}
           <DialogFooter>
             <Button
-            disabled={isUpdating}
+              disabled={isUpdating}
               onClick={() => {
                 if (selectedProperty) {
                   updateProperty(selectedProperty);
@@ -2663,7 +2712,7 @@ export default function StayScanDashboard() {
               }}
               className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
             >
-              {isUpdating ? 'Saving...' : "Save Changes"}
+              {isUpdating ? "Saving..." : "Save Changes"}
             </Button>
           </DialogFooter>
         </DialogContent>
