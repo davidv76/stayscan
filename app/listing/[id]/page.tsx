@@ -271,7 +271,7 @@ export default function PropertyInfoPage() {
         .filter(subArray => subArray.length > 0 && subArray[0].trim() !== "")
         .map(subArray =>
           subArray.map(item => {
-              return item.trim(); // Trim whitespace for other items
+              return item.trim();
           })
       );
     
@@ -344,18 +344,14 @@ export default function PropertyInfoPage() {
                 ? category.content.split(",").map((item, index) => {
                     const trimmedItem = item.trim();
                     return (
-                      <Link
+                      <p
                         key={index}
-                        href={trimmedItem}
-                        target=""
-                        rel=" "
                         className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors duration-200 cursor-pointer gap-1"
-                        onClick={(e) => e.stopPropagation()}
                       >
                         <span className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm hover:bg-gray-200 transition-colors duration-200 cursor-pointer">
                           {trimmedItem}
                         </span>
-                      </Link>
+                      </p>
                     );
                   })
                 : "No content available"}
