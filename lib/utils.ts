@@ -50,7 +50,7 @@ export function processText(inputText: string): string {
     // Ensure the URL has a protocol
     const href = match.startsWith('http') ? match : `https://${match}`;
 
-    return `<a class="text-blue-500 underline" href="${href}" target="_blank" rel="noopener noreferrer">${match}</a>`;
+    return `<a style="word-wrap: break-word;" class="text-blue-500 underline" href="${href}" target="_blank" rel="noopener noreferrer">${match}</a>`;
   });
 
   // Sanitize the processed text

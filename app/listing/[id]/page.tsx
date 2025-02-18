@@ -394,7 +394,7 @@ export default function PropertyInfoPage() {
             <MapPin className="w-5 h-5 mr-2" />
             {property.location}
           </p>
-          <div className="relative w-full h-48 md:h-64 lg:h-96 rounded-lg overflow-hidden">
+          <div className="relative w-full h-[15rem] lg:h-[40rem] md:h-[20rem] sm:h-[15rem] rounded-lg overflow-hidden">
             <Image
               src={
                 property.images[0] || "/placeholder.svg?height=384&width=768"

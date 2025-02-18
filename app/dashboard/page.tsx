@@ -2864,7 +2864,7 @@ export default function StayScanDashboard() {
         </DialogContent>
       </Dialog>
 
-      {showUpgradeBox &&
+      {/* {showUpgradeBox &&
         currentSubscription &&
         currentSubscription.name !== "Enterprise" && (
           <motion.div
@@ -2896,7 +2896,7 @@ export default function StayScanDashboard() {
               Upgrade Now
             </Button>
           </motion.div>
-        )}
+        )} */}
       {/* Stripe Blocked Alert */}
       {stripeBlocked && (
         <div className="fixed bottom-4 right-4 z-50">

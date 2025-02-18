@@ -121,7 +121,7 @@ export default function Component() {
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <button className="bg-teal-500 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-teal-600 transition-colors duration-200 flex items-center gap-2">
-            Start Free Trial
+            <Link href="/tiers">Start Free Trial</Link>
             <svg
               className="w-5 h-5"
               fill="none"
@@ -237,58 +237,61 @@ export default function Component() {
             <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl text-center mb-12 text-gray-900">Pricing Plans</h2>
             <div className="flex justify-center w-full">
               <Tabs defaultValue="monthly" className="w-full max-w-3xl mx-auto">
-                <TabsList className="grid w-full grid-cols-2 mb-8">
+                {/* <TabsList className="grid w-full grid-cols-2 mb-8">
                   <TabsTrigger value="monthly">Monthly</TabsTrigger>
                   <TabsTrigger value="annual">Annual (Save 20%)</TabsTrigger>
-                </TabsList>
+                </TabsList> */}
                 <TabsContent value="monthly">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
                       <CardHeader>
-                        <CardTitle className="text-xl font-semibold">Host</CardTitle>
+                        <CardTitle className="text-xl text-black font-semibold">Host</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="text-4xl font-bold mb-2 text-blue-600">$9.99<span className="text-lg font-normal text-gray-600">/mo</span></div>
+                        <div className="text-2xl font-bold mb-2 text-emerald-600">$9.99<span className="text-sm font-normal text-gray-600">/Properites/Month</span></div>
                         <ul className="space-y-2 mb-4">
                         <li className="flex items-center text-gray-600">
                             <Check className="mr-2 h-4 w-4 text-green-500" />
-                            4 Properties
+                            1-5 Properties
                           </li>
                           <li className="flex items-center text-gray-600">
                           Designed for individual hosts or those with up to 4 properties, providing all essential guest experience features.
                           </li>
                         </ul>
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" asChild>
+                        <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white" asChild>
                         <Link href="/dashboard">Choose Plan</Link>
                       </Button>                      
                       </CardContent>
                     </Card>
-                    <Card className="bg-white shadow-sm hover:shadow-md transition-shadow border-2 border-blue-600">
+                    <Card className="bg-white shadow-sm hover:shadow-md transition-shadow border-2 border-emerald-600">
                       <CardHeader>
-                        <CardTitle className="text-xl font-semibold">Professional</CardTitle>
+                        <CardTitle className="text-xl text-black font-semibold">Professional</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="text-4xl font-bold mb-2 text-blue-600">$7.99<span className="text-lg font-normal text-gray-600">/mo</span></div>
+                        <div className="text-2xl font-bold mb-2 text-emerald-600">$7.99<span className="text-sm font-normal text-gray-600">/Properties/Month</span></div>
                         <ul className="space-y-2 mb-4">
                         <li className="flex items-center text-gray-600">
                             <Check className="mr-2 h-4 w-4 text-green-500" />
-                            5-49 Properties
+                            6-50 Properties
                           </li>
                           <li className="flex items-center text-gray-600">
                           Perfect for hosts with a growing portfolio. Includes advanced analytics and streamlined support to enhance guest experiences at scale.
                           </li>
                         </ul>
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" asChild>
+                        <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white" asChild>
                         <Link href="/dashboard">Choose Plan</Link>
                       </Button> 
                       </CardContent>
                     </Card>
                     <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
                       <CardHeader>
-                        <CardTitle className="text-xl font-semibold">Enterprise</CardTitle>
+                        <CardTitle className="text-xl text-black font-semibold">Enterprise</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="text-4xl font-bold mb-2 text-blue-600">Custom</div>
+                        <div className='flex items-end mb-2'>
+                          <div className="text-2xl font-bold text-emerald-600">49.99</div>
+                          <p className='text-gray-600 text-sm'>/Properties/Month</p>
+                        </div>
                         <ul className="space-y-2 mb-4">
                           <li className="flex items-center text-gray-600">
                             <Check className="mr-2 h-4 w-4 text-green-500" />
@@ -298,14 +301,14 @@ export default function Component() {
                           Tailored solutions for large-scale operations, with personalized onboarding, priority support, and potential custom integrations.
                           </li>
                         </ul>
-                        <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white" asChild>
+                        <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white" asChild>
                         <Link href="/dashboard">Contact Sales</Link>
                       </Button>                     
                        </CardContent>
                     </Card>
                   </div>
                 </TabsContent>
-                <TabsContent value="annual">
+                {/* <TabsContent value="annual">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
                       <CardHeader>
@@ -362,7 +365,7 @@ export default function Component() {
                       </CardContent>
                     </Card>
                   </div>
-                </TabsContent>
+                </TabsContent> */}
               </Tabs>
             </div>
           </div>
@@ -443,8 +446,8 @@ export default function Component() {
       </main>
       <footer className="w-full py-6 bg-gray-100">
         <div className="container mx-auto px-4 md:px-6 w-full max-w-7xl flex flex-col md:flex-row justify-between items-center">
-          <div className="flex flex-col items-center md:items-start mb-4 md:mb-0">
-            <BuildingIcon className="h-6 w-6 text-blue-600 mb-2" />
+          <div className="flex items-center mb-4 md:mb-0">
+            <Image src={logo} alt='logo' height={50} width={50} className='rounded-full' />
             <p className="text-sm text-gray-600">© 2024 Stayscan Inc. All rights reserved.</p>
           </div>
           <nav className="flex flex-wrap justify-center md:justify-end gap-4 sm:gap-6">
