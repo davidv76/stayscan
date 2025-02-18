@@ -13,14 +13,14 @@ const QRScannerGuide = forwardRef<HTMLDivElement, QRScannerGuideProps>(
   ({ qrcode, propertyName }, ref) => {
 
   return (
-    <div ref={ref} className="max-w-md mx-auto text-center bg-white p-4 rounded">
+    <div ref={ref} className="max-w-[100%] text-center bg-white p-4 rounded">
       <DialogTitle className="text-emerald-600 text-2xl font-bold mb-2">
         SCAN ME NOW  
       </DialogTitle>
       
       <div className="mb-4">
-        <h2 className="text-xl mb-1 text-emerald-600">{propertyName}</h2>
-        <DialogDescription className="text-teal-500 text-sm mb-2">Your Digital Guide Awaits</DialogDescription>
+        <h2 className="text-xl mb-1 text-emerald-600 font-bold">{propertyName}</h2>
+        <DialogDescription className="text-emerald-600 text-sm mb-2 font-bold">Your Digital Guide Awaits</DialogDescription>
         <p className="text-gray-600 text-sm">
           WiFi Access • House Rules • Local Attractions • More
         </p>
@@ -58,7 +58,7 @@ const QRScannerGuide = forwardRef<HTMLDivElement, QRScannerGuideProps>(
       </div>
 
       <div className="mt-6 text-gray-400 text-xs flex justify-center items-center gap-2">
-        <span>Powered by</span> <Image className='w-[20px] h-[20px] rounded-full' src={logo} alt="logo" />  <span className="text-gray-500">Stayscan.tech</span>
+        <span>Powered by</span> <img className='w-[20px] h-[20px] rounded-full' src={logo.src} alt="logo" />  <span className="text-gray-500">Stayscan.tech</span>
       </div>
     </div>
   );

@@ -5,8 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { put } from "@vercel/blob";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { toPng } from "html-to-image";
-import { saveAs } from "file-saver";
+
 import { useUser, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import {
@@ -103,6 +102,8 @@ import BtnSpinner from "@/components/ui/btnSpinner";
 import AddressSuggestions from "@/components/addressSuggestions";
 import QRScannerGuide from "@/components/QRScannerGuide";
 import Image from "next/image";
+
+import domtoimage from "dom-to-image";
 
 // Define color scheme
 const colors = {
@@ -1515,7 +1516,7 @@ export default function StayScanDashboard() {
                       </style>
                     </head>
                     <body>
-                          <div class="card-container" style="width: 100%; max-width: 500px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); padding: 24px; margin: 20px;">
+                          <div class="card-container" style="width: 100%; max-width: 500px; border-radius: 8px; padding: 24px; margin: 20px;">
                                       <!-- Header Section -->
                                       <div style="text-align: center; margin-bottom: 24px;">
                                           <h1 style="color: #047857; font-size: 30px; font-weight: bold; margin: 0 0 8px 0;">SCAN ME NOW</h1>
@@ -1524,7 +1525,7 @@ export default function StayScanDashboard() {
                                           <hr style="width: 22%; border: 1px solid #047857;" />
                                           
                                           <h2 style="color: #047857; font-size: 20px; margin: 0 0 4px 0; text-transform: capitalize">${property.name}</h2>
-                                          <p style="color: #10b981; font-size: 14px; margin: 0 0 8px 0;">Your Digital Guide Awaits</p>
+                                          <p style="color: #047857; font-size: 14px; margin: 0 0 8px 0;">Your Digital Guide Awaits</p>
                                           
                                           <!-- Navigation Links -->
                                           <div style="color: #6b7280; font-size: 14px;">
@@ -1574,21 +1575,55 @@ export default function StayScanDashboard() {
     };
 
     const handleDownload = async () => {
-      if (qrCodeComponentRef.current) {
-        try {
-          const image = await toPng(qrCodeComponentRef.current);
-          saveAs(image, "propert-qr-code.png"); // Save as PNG
-        } catch (error) {
-          console.error("Failed to download image:", error);
+      try {
+        if (!qrCodeComponentRef.current) return;
+
+        const options = {
+          quality: 1.0,
+          scale: 3.0, // Increase this for higher resolution (2.0 = 2x, 3.0 = 3x, etc.)
+          style: {
+            'transform': 'scale(1)',
+            'transform-origin': 'top left'
+          }
+        };
+
+        const data = await domtoimage.toPng(qrCodeComponentRef.current, options);
+
+        if(!data) throw new Error('Could not generate image!');
+    
+        const response = await fetch(data);
+        if (!response.ok) {
+          throw new Error("Failed to fetch image");
         }
+    
+        // Convert the response to a Blob
+        const blob = await response.blob();
+    
+        // Create a temporary link element
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "QR-code-image.jpg"; // Set the filename
+        document.body.appendChild(link);
+    
+        // Trigger the download
+        link.click();
+    
+        // Clean up
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+      } catch (error) {
+        console.log(error)
       }
+
     };
+
+
 
     if (!property) return null;
 
     return (
       <Dialog open={showQRCode} onOpenChange={setShowQRCode}>
-        <DialogContent className="bg-white sm:max-w-[425px]">
+        <DialogContent className="bg-white sm:max-w-[500px]">
           <div className="flex flex-col items-center space-y-6">
             <QRScannerGuide
               qrcode={qrCodeData}
@@ -1885,7 +1920,7 @@ export default function StayScanDashboard() {
                 transition={{ delay: 0.4, duration: 0.5 }}
                 className="flex items-center bg-[#1e3932] bg-opacity-50 rounded-xl p-4 backdrop-blur-sm"
               >
-                <UserButton afterSignOutUrl="/" />
+                <UserButton />
                 {isSidebarExpanded && user && (
                   <motion.div
                     initial={{ opacity: 0, x: -20 }}

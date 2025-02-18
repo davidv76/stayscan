@@ -11,28 +11,36 @@ interface SubscriptionPlan {
   price: number;
   propertyLimit: number;
   stripeId: string | null;
+  desc?: string;
+  supportingText: string;
 }
 
 
 const subscriptionPlans: SubscriptionPlan[] = [
-  { name: "free", price: 0, propertyLimit: 1, stripeId: null },
+  { name: "free", price: 0, propertyLimit: 1, stripeId: null, supportingText: '1 Property', desc: 'Limitted properties and functionality' },
   {
     name: "basic",
     price: 9.99,
     propertyLimit: 5,
+    supportingText: '1-5 Properties',
     stripeId: "price_1QkKskBy9Ue4ijcYwlExvrjV",
+    desc: 'Designed for individual hosts or those with up to 4 properties, providing all essential guest experience features.'
   },
   {
     name: "pro",
-    price: 19.99,
-    propertyLimit: 15,
+    price: 7.99,
+    propertyLimit: 49,
+    supportingText: '6-50 Properties',
     stripeId: "price_1QkKt1By9Ue4ijcY7uomvOeI",
+    desc: 'Perfect for hosts with a growing portfolio. Includes advanced analytics and streamlined support to enhance guest experiences at scale.'
   },
   {
     name: "enterprise",
     price: 49.99,
     propertyLimit: 50,
+    supportingText: 'Unlimited Properties',
     stripeId: "price_1QkKtHBy9Ue4ijcYFk2Emofg",
+    desc: 'Tailored solutions for large-scale operations, with personalized onboarding, priority support, and potential custom integrations.'
   },
 ]
 
@@ -127,7 +135,7 @@ export default function TiersPage() {
               {subscriptionPlans.map((plan, idx) => (
                 <div
                   key={idx}
-                  className="flex flex-col gap-3 rounded-xl border border-solid border-[#E9DFCE] bg-[#FFFFFF] p-6"
+                  className="flex flex-col gap-3 justify-between rounded-xl border border-solid border-[#E9DFCE] bg-[#FFFFFF] p-6"
                 >
                   <div className="flex flex-col gap-1">
                     <div
@@ -147,26 +155,18 @@ export default function TiersPage() {
                       )}
                     </div>
                     <p className="flex items-baseline gap-1 text-[#1C160C]">
-                      <span className="text-[#1C160C] text-4xl font-black leading-tight tracking-[-0.033em]">
+                      <span className="text-[#1C160C] text-3xl font-black leading-tight tracking-[-0.033em]">
                         ${plan.price}
                       </span>
-                      <span className="text-[#1C160C] text-base font-bold leading-tight">
-                        /month
+                      <span className="text-emerald-600 text-base font-bold leading-tight">
+                        /Properties/Month
                       </span>
                     </p>
                   </div>
-
-                  <button
-                    onClick={() => handleChoosePlan(plan)}
-                    disabled={isLoading[plan.name]}
-                    className="disabled:opacity-75 disabled:cursor-not-allowed flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold leading-normal tracking-[0.015em]"
-                  >
-                    <span className="truncate">{isLoading[plan.name] ? <BtnSpinner height="20px" width="20px" /> : 'Select plan'}</span>
-                  </button>
                   <div className="flex flex-col gap-2">
-                    <div className="text-[13px] font-normal leading-normal flex gap-3 text-[#1C160C]">
+                    <div className="text-[16px] font-bold leading-normal flex gap-3 text-emerald-600">
                       <div
-                        className="text-[#1C160C]"
+                        className="text-emerald-600"
                         data-icon="Check"
                         data-size="20px"
                         data-weight="regular"
@@ -181,9 +181,23 @@ export default function TiersPage() {
                           <path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"></path>
                         </svg>
                       </div>
-                      Up to {plan.propertyLimit} properties
+                     {plan.supportingText}
                     </div>
                   </div>
+
+                  <div>
+                    <p className="text-gray-600">
+                      {plan?.desc}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleChoosePlan(plan)}
+                    disabled={isLoading[plan.name]}
+                    className="disabled:opacity-75 disabled:cursor-not-allowed flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-full h-10 px-4 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold leading-normal tracking-[0.015em]"
+                  >
+                    <span className="truncate">{isLoading[plan.name] ? <BtnSpinner height="20px" width="20px" /> : 'Select plan'}</span>
+                  </button>
+                  
                 </div>
               ))}
             </div>
