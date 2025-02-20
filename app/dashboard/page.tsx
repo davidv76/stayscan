@@ -89,6 +89,7 @@ import {
   CalendarCheck,
   CheckCircle,
   HelpCircle,
+  Check,
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -172,27 +173,31 @@ interface SubscriptionPlan {
   price: number;
   propertyLimit: number;
   stripeId: string;
+  desc: string;
 }
 
 // Define subscription plans
 const subscriptionPlans: SubscriptionPlan[] = [
   {
-    name: "basic",
+    name: "host",
     price: 9.99,
     propertyLimit: 5,
     stripeId: "price_1QkKskBy9Ue4ijcYwlExvrjV",
+    desc: 'Designed for individual hosts or those with up to 4 properties, providing all essential guest experience features.'
   },
   {
-    name: "pro",
-    price: 19.99,
-    propertyLimit: 15,
+    name: "professional",
+    price: 7.99,
+    propertyLimit: 50,
     stripeId: "price_1QkKt1By9Ue4ijcY7uomvOeI",
+    desc: 'Perfect for hosts with a growing portfolio. Includes advanced analytics and streamlined support to enhance guest experiences at scale.'
   },
   {
     name: "enterprise",
     price: 49.99,
     propertyLimit: 50,
     stripeId: "price_1QkKtHBy9Ue4ijcYFk2Emofg",
+    desc: 'Tailored solutions for large-scale operations, with personalized onboarding, priority support, and potential custom integrations.'
   },
 ];
 
@@ -1345,6 +1350,10 @@ export default function StayScanDashboard() {
   // Subscription handling
   const handleSubscription = async (plan: SubscriptionPlan) => {
     try {
+      if(plan.name.includes('enterprise')){
+        alert('Contact Saller form comming soon!')
+        return;
+      }
       setIsBtnLoading((prev) => ({ ...prev, [plan.name]: true }));
       const response = await fetch("/api/create-checkout-session", {
         method: "POST",
@@ -2102,7 +2111,7 @@ export default function StayScanDashboard() {
                                 {property.qrScans} scans
                               </span>
                             </div> */}
-                            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                            <p className="text-sm text-gray-500 mb-3 line-clamp-2">
                               {property.description}
                             </p>
                             <div className="flex flex-wrap gap-2 mb-3"></div>
@@ -2112,7 +2121,7 @@ export default function StayScanDashboard() {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="text-gray-600 hover:text-gray-900"
+                                    className="text-gray-400 hover:text-gray-200"
                                   >
                                     <MoreHorizontal className="h-5 w-5" />
                                   </Button>
@@ -2330,7 +2339,7 @@ export default function StayScanDashboard() {
               Choose a plan that best fits your needs.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-4 py-4">
+          <div className="grid gap-4 py-4 h-[80vh] overflow-y-auto">
             {subscriptionPlans.map((plan) => (
               <Card
                 key={plan.name}
@@ -2346,15 +2355,25 @@ export default function StayScanDashboard() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-3xl font-bold text-emerald-600">
-                    ${plan.price}
-                    <span className="text-base font-normal text-gray-400">
-                      /month
-                    </span>
-                  </p>
-                  <p className="mt-2 text-gray-400">
-                    Up to {plan.propertyLimit} properties
-                  </p>
+                  {plan.name.includes('enterprise') ? <p className="text-3xl font-bold text-emerald-600">Please contact.</p> :
+                  <>
+                    <p className="text-3xl font-bold text-emerald-600">
+                      
+                        ${plan.price}
+                        <span className="text-base font-normal text-gray-400">
+                          /Property/Month
+                        </span>
+                      
+                    </p>
+                    <div className="mt-2 flex items-center">
+                    <Check className="mr-2 h-4 w-4 text-green-500" />
+                      <p className="text-gray-400">
+                        {plan.name.includes('host') ? '1' : '6'} - {plan.propertyLimit} properties
+                      </p>
+                    </div>
+                  </>
+                  }
+                  <p className="mt-2 text-gray-400">{plan.desc}</p>
                 </CardContent>
                 <CardFooter>
                   {currentSubscription?.name === plan.name ? (
@@ -2376,7 +2395,7 @@ export default function StayScanDashboard() {
                       {isBtnLoading[plan.name] ? (
                         <BtnSpinner height="15px" width="15px" />
                       ) : (
-                        "Switch to this plan"
+                         plan.name.includes('enterprise') ? "Contact sales" : "Switch to this plan"
                       )}
                     </Button>
                   )}

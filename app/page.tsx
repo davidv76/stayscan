@@ -43,7 +43,7 @@ export default function Component() {
         </nav>
         <div className="hidden md:flex items-center ml-4">
           <Button variant="outline" className="mr-2" asChild>
-            <Link href="/dashboard" className='text-white'>Log In</Link>
+            <Link href="/dashboard">Log In</Link>
           </Button>
           <Button asChild>
             <Link href="/sign-up">Sign Up</Link>
@@ -150,55 +150,55 @@ export default function Component() {
               <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader>
                   <Building className="w-8 h-8 text-blue-600 mb-2" />
-                  <CardTitle className="text-xl font-semibold">Digital Guides</CardTitle>
+                  <CardTitle className="text-xl text-gray-900 font-semibold">Create digital guides in seconds</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600">Create comprehensive digital guides for your properties, enhancing guest experience and reducing inquiries.</p>
+                  <p className="text-gray-600">Instantly generate personalized guest guides with AI</p>
                 </CardContent>
               </Card>
               <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader>
                   <Users className="w-8 h-8 text-blue-600 mb-2" />
-                  <CardTitle className="text-xl font-semibold">Listing Management</CardTitle>
+                  <CardTitle className="text-xl font-semibold text-gray-900">Update anytime - no reprints needed</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600">Efficiently manage and update your property listings across multiple platforms from a single dashboard.</p>
+                  <p className="text-gray-600">Make changes on the fly without repriting or re-uploading.</p>
                 </CardContent>
               </Card>
               <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader>
                   <BarChart className="w-8 h-8 text-blue-600 mb-2" />
-                  <CardTitle className="text-xl font-semibold">Performance Analytics</CardTitle>
+                  <CardTitle className="text-xl font-semibold text-gray-900">Always provide up-to-date guest recommendations</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600">Gain valuable insights into your property performance with comprehensive analytics and reporting tools.</p>
+                  <p className="text-gray-600">Ensure guests get the best local tips, no matter the season.</p>
                 </CardContent>
               </Card>
               <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader>
                   <Key className="w-8 h-8 text-blue-600 mb-2" />
-                  <CardTitle className="text-xl font-semibold">Guest Communication</CardTitle>
+                  <CardTitle className="text-xl font-semibold text-gray-900">Boost guest satisfaction effortlessly</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600">Streamline guest communication with automated messaging and a centralized inbox for all your properties.</p>
+                  <p className="text-gray-600">Improve reviews and repeat bookings with a seamless experience.</p>
                 </CardContent>
               </Card>
               <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader>
                   <Wrench className="w-8 h-8 text-blue-600 mb-2" />
-                  <CardTitle className="text-xl font-semibold">Task Management</CardTitle>
+                  <CardTitle className="text-xl font-semibold text-gray-900">Reduce host workload with automation</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600">Efficiently manage and track tasks related to property maintenance, cleaning, and guest requests.</p>
+                  <p className="text-gray-600">Cut down on guest inquiries and save hours of admin work.</p>
                 </CardContent>
               </Card>
               <Card className="bg-white shadow-sm hover:shadow-md transition-shadow">
                 <CardHeader>
                   <Shield className="w-8 h-8 text-blue-600 mb-2" />
-                  <CardTitle className="text-xl font-semibold">Booking Management</CardTitle>
+                  <CardTitle className="text-xl font-semibold text-gray-900">Increase nightly rates with better experiences</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-gray-600">Manage bookings across multiple platforms, sync calendars, and avoid double bookings with ease.</p>
+                  <p className="text-gray-600">Happier guests mean higher value stays and better revenue.</p>
                 </CardContent>
               </Card>
             </div>
@@ -248,7 +248,7 @@ export default function Component() {
                         <CardTitle className="text-xl text-black font-semibold">Host</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="text-2xl font-bold mb-2 text-emerald-600">$9.99<span className="text-sm font-normal text-gray-600">/Properites/Month</span></div>
+                        <div className="text-2xl font-bold mb-2 text-emerald-600">$9.99<span className="text-sm font-normal text-gray-600">/Property/Month</span></div>
                         <ul className="space-y-2 mb-4">
                         <li className="flex items-center text-gray-600">
                             <Check className="mr-2 h-4 w-4 text-green-500" />
@@ -268,7 +268,7 @@ export default function Component() {
                         <CardTitle className="text-xl text-black font-semibold">Professional</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className="text-2xl font-bold mb-2 text-emerald-600">$7.99<span className="text-sm font-normal text-gray-600">/Properties/Month</span></div>
+                        <div className="text-2xl font-bold mb-2 text-emerald-600">$7.99<span className="text-sm font-normal text-gray-600">/Property/Month</span></div>
                         <ul className="space-y-2 mb-4">
                         <li className="flex items-center text-gray-600">
                             <Check className="mr-2 h-4 w-4 text-green-500" />
@@ -288,9 +288,8 @@ export default function Component() {
                         <CardTitle className="text-xl text-black font-semibold">Enterprise</CardTitle>
                       </CardHeader>
                       <CardContent>
-                        <div className='flex items-end mb-2'>
-                          <div className="text-2xl font-bold text-emerald-600">49.99</div>
-                          <p className='text-gray-600 text-sm'>/Properties/Month</p>
+                        <div className='mb-2'>
+                          <div className="text-2xl font-bold text-emerald-600">Please contact</div>
                         </div>
                         <ul className="space-y-2 mb-4">
                           <li className="flex items-center text-gray-600">
@@ -302,7 +301,7 @@ export default function Component() {
                           </li>
                         </ul>
                         <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white" asChild>
-                        <Link href="/dashboard">Contact Sales</Link>
+                        <Link href="#contact">Contact Sales</Link>
                       </Button>                     
                        </CardContent>
                     </Card>
@@ -406,21 +405,21 @@ export default function Component() {
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-2">
-                <AccordionTrigger>Can I integrate Stayscan with my existing booking software?</AccordionTrigger>
+                <AccordionTrigger>Can I customize my digital guide for each property?</AccordionTrigger>
                 <AccordionContent>
-                  Yes, Stayscan offers integrations with many popular booking platforms and property management systems. Our team can assist you in setting up custom integrations if needed.
+                  Yes, StayScan allows you to fully customize your digital guide, including property details, local recommendations, and automated messages tailored to each guest.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-3">
-                <AccordionTrigger>Is there a limit to the number of properties I can manage with Stayscan?</AccordionTrigger>
+                <AccordionTrigger>Is there a limit to the number of properties I can manage with StayScan?</AccordionTrigger>
                 <AccordionContent>
                   Our Starter and Professional plans have limits on the number of properties you can manage. For unlimited properties, we recommend our Enterprise plan, which can be customized to your specific needs.
                 </AccordionContent>
               </AccordionItem>
               <AccordionItem value="item-4">
-                <AccordionTrigger>Do you offer a mobile app for property management on-the-go?</AccordionTrigger>
+                <AccordionTrigger>Does StayScan work on mobile devices?</AccordionTrigger>
                 <AccordionContent>
-                  Yes, Stayscan offers mobile apps for both iOS and Android devices. These apps allow you to manage your properties, update digital guides, and communicate with guests on-the-go.
+                  Yes, StayScan is fully optimized for all mobile devices, allowing you to manage properties, update guides, and communicate with guests seamlessly from any phone or tablet.
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
