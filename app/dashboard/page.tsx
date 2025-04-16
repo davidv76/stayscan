@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { put } from "@vercel/blob";
 import { useRouter, useSearchParams } from "next/navigation";
 
-
 import { useUser, UserButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import {
@@ -183,21 +182,21 @@ const subscriptionPlans: SubscriptionPlan[] = [
     price: 9.99,
     propertyLimit: 5,
     stripeId: "price_1QkKskBy9Ue4ijcYwlExvrjV",
-    desc: 'Designed for individual hosts or those with up to 4 properties, providing all essential guest experience features.'
+    desc: "Designed for individual hosts or those with up to 4 properties, providing all essential guest experience features.",
   },
   {
     name: "professional",
     price: 7.99,
     propertyLimit: 50,
     stripeId: "price_1QkKt1By9Ue4ijcY7uomvOeI",
-    desc: 'Perfect for hosts with a growing portfolio. Includes advanced analytics and streamlined support to enhance guest experiences at scale.'
+    desc: "Perfect for hosts with a growing portfolio. Includes advanced analytics and streamlined support to enhance guest experiences at scale.",
   },
   {
     name: "enterprise",
     price: 49.99,
     propertyLimit: 50,
     stripeId: "price_1QkKtHBy9Ue4ijcYFk2Emofg",
-    desc: 'Tailored solutions for large-scale operations, with personalized onboarding, priority support, and potential custom integrations.'
+    desc: "Tailored solutions for large-scale operations, with personalized onboarding, priority support, and potential custom integrations.",
   },
 ];
 
@@ -812,18 +811,25 @@ export default function StayScanDashboard() {
         ...prev,
         applianceGuides: data.applianceGuides,
         houseRules: data.houseRules,
-        nearbyPlaces: data.nearbyPlaces?.map((item: {name: string; address: string})=> (`Place name: ${item.name}\n Address: ${item.address}`)).join('\n\n'),
+        nearbyPlaces: data.nearbyPlaces
+          ?.map(
+            (item: { name: string; address: string }) =>
+              `Place name: ${item.name}\n Address: ${item.address}`
+          )
+          .join("\n\n"),
         amenities: data.amenities,
-        localFood: data.localFood?.map(
-          (item: {
-            restaurantName: string;
-            address: string;
-            websiteUrl: string;
-            phone: string;
-            description: string;
-          }) =>
-            `name: ${item.restaurantName} - ${item.address} \n website: ${item.websiteUrl} \n Phone: ${item.phone} \n About: ${item.description}`
-        ).join('\n\n'),
+        localFood: data.localFood
+          ?.map(
+            (item: {
+              restaurantName: string;
+              address: string;
+              websiteUrl: string;
+              phone: string;
+              description: string;
+            }) =>
+              `name: ${item.restaurantName} - ${item.address} \n website: ${item.websiteUrl} \n Phone: ${item.phone} \n About: ${item.description}`
+          )
+          .join("\n\n"),
         checkOutDay: { ...data.checkOutDay },
         rubbishAndBins: data.rubbishAndBins,
       }));
@@ -1350,8 +1356,8 @@ export default function StayScanDashboard() {
   // Subscription handling
   const handleSubscription = async (plan: SubscriptionPlan) => {
     try {
-      if(plan.name.includes('enterprise')){
-        alert('Contact Saller form comming soon!')
+      if (plan.name.includes("enterprise")) {
+        alert("Contact Saller form comming soon!");
         return;
       }
       setIsBtnLoading((prev) => ({ ...prev, [plan.name]: true }));
@@ -1591,42 +1597,42 @@ export default function StayScanDashboard() {
           quality: 1.0,
           scale: 3.0, // Increase this for higher resolution (2.0 = 2x, 3.0 = 3x, etc.)
           style: {
-            'transform': 'scale(1)',
-            'transform-origin': 'top left'
-          }
+            transform: "scale(1)",
+            "transform-origin": "top left",
+          },
         };
 
-        const data = await domtoimage.toPng(qrCodeComponentRef.current, options);
+        const data = await domtoimage.toPng(
+          qrCodeComponentRef.current,
+          options
+        );
 
-        if(!data) throw new Error('Could not generate image!');
-    
+        if (!data) throw new Error("Could not generate image!");
+
         const response = await fetch(data);
         if (!response.ok) {
           throw new Error("Failed to fetch image");
         }
-    
+
         // Convert the response to a Blob
         const blob = await response.blob();
-    
+
         // Create a temporary link element
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = "QR-code-image.jpg"; // Set the filename
         document.body.appendChild(link);
-    
+
         // Trigger the download
         link.click();
-    
+
         // Clean up
         document.body.removeChild(link);
         URL.revokeObjectURL(link.href);
       } catch (error) {
-        console.log(error)
+        console.log(error);
       }
-
     };
-
-
 
     if (!property) return null;
 
@@ -2355,24 +2361,27 @@ export default function StayScanDashboard() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {plan.name.includes('enterprise') ? <p className="text-3xl font-bold text-emerald-600">Please contact.</p> :
-                  <>
+                  {plan.name.includes("enterprise") ? (
                     <p className="text-3xl font-bold text-emerald-600">
-                      
+                      Please contact.
+                    </p>
+                  ) : (
+                    <>
+                      <p className="text-3xl font-bold text-emerald-600">
                         ${plan.price}
                         <span className="text-base font-normal text-gray-400">
                           /Property/Month
                         </span>
-                      
-                    </p>
-                    <div className="mt-2 flex items-center">
-                    <Check className="mr-2 h-4 w-4 text-green-500" />
-                      <p className="text-gray-400">
-                        {plan.name.includes('host') ? '1' : '6'} - {plan.propertyLimit} properties
                       </p>
-                    </div>
-                  </>
-                  }
+                      <div className="mt-2 flex items-center">
+                        <Check className="mr-2 h-4 w-4 text-green-500" />
+                        <p className="text-gray-400">
+                          {plan.name.includes("host") ? "1" : "6"} -{" "}
+                          {plan.propertyLimit} properties
+                        </p>
+                      </div>
+                    </>
+                  )}
                   <p className="mt-2 text-gray-400">{plan.desc}</p>
                 </CardContent>
                 <CardFooter>
@@ -2394,8 +2403,10 @@ export default function StayScanDashboard() {
                         : "Select this plan"} */}
                       {isBtnLoading[plan.name] ? (
                         <BtnSpinner height="15px" width="15px" />
+                      ) : plan.name.includes("enterprise") ? (
+                        "Contact sales"
                       ) : (
-                         plan.name.includes('enterprise') ? "Contact sales" : "Switch to this plan"
+                        "Switch to this plan"
                       )}
                     </Button>
                   )}
